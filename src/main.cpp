@@ -14,6 +14,7 @@
 #include "camera.hpp"
 #include "input.hpp"
 #include "map.hpp"
+#include "graph1d.hpp"
 
 int main(void)
 {
@@ -52,13 +53,12 @@ int main(void)
 
 	Graphic::Renderer renderer;
 	Input::InputManager inputManager(*window, renderer.GetCamera());
-	renderer.AddMesh(new Graphic::Map(glm::ivec2(16,16)));
+//	renderer.AddMesh(new Graphic::Map(glm::ivec2(16,16)));
 //	renderer.AddMesh(new Graphic::Mesh());
+	Math::NoiseFunction noise(20);
+	renderer.AddMesh(new Graphic::Graph1d(noise));
 	//test -------------------------------------------------------------
 
-	// Get a handle for our "MVP" uniform
-	// Only during the initialisation
-//	GLuint MatrixID = glGetUniformLocation(effect.getProgId(), "MVP");
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))

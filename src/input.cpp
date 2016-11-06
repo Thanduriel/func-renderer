@@ -48,5 +48,8 @@ namespace Input{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else if (glfwGetKey(&m_window, GLFW_KEY_2))
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		if (glfwGetKey(&m_window, GLFW_KEY_0))
+			m_camera.reset();
 	}
 }

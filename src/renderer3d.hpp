@@ -4,6 +4,12 @@
 #include "camera.hpp"
 
 namespace Graphic{
+
+	enum class RenderModes{
+		Lines,
+		Triangles
+	};
+
 	class Renderer
 	{
 	public:
@@ -14,6 +20,8 @@ namespace Graphic{
 		void AddMesh(Mesh* _mesh) { m_meshes.push_back(_mesh); updateBuffer(*_mesh); }
 
 		Camera& GetCamera() { return m_camera; }
+
+		void setRenderMode(RenderModes _mode);
 	private:
 		void updateBuffer(Mesh& _mesh);
 

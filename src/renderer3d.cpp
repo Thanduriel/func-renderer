@@ -11,11 +11,18 @@
 namespace Graphic{
 
 	Renderer::Renderer():
-		m_camera(glm::vec3(4.f, 3.f, 3.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f))
+		m_camera(glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f))
 	{
 		
 	}
 
+	// ********************************************************************* //
+	void Renderer::setRenderMode(RenderModes _mode)
+	{
+
+	}
+
+	// ********************************************************************* //
 	void Renderer::updateBuffer(Mesh& _mesh)
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, _mesh.GetVertices().getId());
@@ -23,6 +30,7 @@ namespace Graphic{
 		glBufferData(GL_ARRAY_BUFFER, _mesh.GetVertices().size() * sizeof(glm::vec3), &_mesh.GetVertices()[0], GL_STATIC_DRAW);
 	}
 
+	// ********************************************************************* //
 	void Renderer::draw(GLFWwindow* _window)
 	{
 		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
@@ -53,8 +61,8 @@ namespace Graphic{
 				0,                  // stride
 				(void*)0            // array buffer offset
 				);
-			// Draw the triangle !
-			glDrawArrays(GL_TRIANGLES, 0, vb.size()); // Starting from vertex 0; 3 vertices total -> 1 triangle
+			
+			glDrawArrays(GL_TRIANGLES, 0, vb.size()); // GL_TRIANGLES
 		}
 		glDisableVertexAttribArray(0);
 

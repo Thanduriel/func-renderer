@@ -12,6 +12,9 @@ namespace Graphic{
 		const glm::mat4& GetViewProjection() const { return m_viewProjectionMatrix; }
 
 		void update(float _dx, float _dy, glm::vec2 _off);
+
+		// Sets back this camera to the initial state.
+		void reset();
 	private:
 		void UpdateMatrix();
 
@@ -21,6 +24,10 @@ namespace Graphic{
 		glm::mat4 m_projectionMatrix;
 
 		glm::mat4 m_viewProjectionMatrix;
+
+		//inital state
+		glm::vec3 m_initialPosition;
+		glm::vec3 m_initialOrigin;
 	};
 
 }
