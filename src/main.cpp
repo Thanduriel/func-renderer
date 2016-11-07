@@ -55,7 +55,7 @@ int main(void)
 	Input::InputManager inputManager(*window, renderer.GetCamera());
 //	renderer.AddMesh(new Graphic::Map(glm::ivec2(16,16)));
 //	renderer.AddMesh(new Graphic::Mesh());
-	Math::NoiseFunction noise(20);
+	Math::PolynomIntFunction noise(20);
 	renderer.AddMesh(new Graphic::Graph1d(noise));
 	//test -------------------------------------------------------------
 

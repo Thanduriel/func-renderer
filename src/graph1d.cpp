@@ -1,17 +1,18 @@
 #include "graph1d.hpp"
 
 namespace Graphic{
-	Graph1d::Graph1d(Math::Function1D _func)
+	Graph1d::Graph1d(Math::Function1D _func, float _res, float _size)
 	{
 		m_vertices.clear();
-		m_vertices.reserve(10 * 2);
+		m_vertices.reserve((int)_res * 6);
 
-		for (float i = 0.f; i < 10.f; ++i)
+		for (float i = 0.f; i < _size; i += _res)
 		{
+			float test = _func(i);
 			m_vertices.emplace_back(i, _func(i), 0.f);
-			m_vertices.emplace_back(i + 1.f, _func(i+1.f), 0.f);
-			m_vertices.emplace_back(i + 1.f, _func(i+1.f)-0.1f, 0.f);
-			m_vertices.emplace_back(i + 1.f, _func(i+1.f)-0.1f, 0.f);
+			m_vertices.emplace_back(i + _res, _func(i+_res), 0.f);
+			m_vertices.emplace_back(i + _res, _func(i+_res)-0.1f, 0.f);
+			m_vertices.emplace_back(i + _res, _func(i+_res)-0.1f, 0.f);
 			m_vertices.emplace_back(i, _func(i)-0.1f, 0.f);
 			m_vertices.emplace_back(i, _func(i), 0.f);
 		}

@@ -23,7 +23,7 @@ namespace Input{
 		// mouse movement
 		glfwSetCursorPos(&m_window, width_2, height_2);
 
-		float speed = 10.f;
+		float speed = 1.f;
 		glm::vec2 position(0.f);
 		// Move forward
 		if (glfwGetKey(&m_window,GLFW_KEY_W) == GLFW_PRESS){
