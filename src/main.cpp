@@ -15,7 +15,7 @@
 #include "input.hpp"
 #include "map.hpp"
 #include "graph1d.hpp"
-#include "functions2d.hpp"
+#include "functions1d.hpp"
 
 int main(void)
 {
@@ -60,7 +60,7 @@ int main(void)
 	Math::CosIntFunction cosf(20);
 	renderer.AddMesh(new Graphic::Graph1d(linearf));
 	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
-	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf + 0.5f, 0.1f, 10.f, 0x00FFFFFF));
+	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.1f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
 	//test -------------------------------------------------------------
 
 
