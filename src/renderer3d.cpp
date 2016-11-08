@@ -42,6 +42,7 @@ namespace Graphic{
 		glEnableVertexAttribArray(0);
 
 		GLuint MatrixID = glGetUniformLocation(effect.getProgId(), "MVP");
+		GLuint colorId = glGetUniformLocation(effect.getProgId(), "uColor");
 
 		for (auto& mesh : m_meshes)
 		{
@@ -51,6 +52,8 @@ namespace Graphic{
 			glm::mat4 mvp = m_camera.GetViewProjection() * mesh->GetModelMatrix();
 
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+			uint32_t col = mesh->GetColor();
+			glUniform4f(colorId, uint8_t(col >> 24) / 255.f, uint8_t(col >> 16) / 255.f, uint8_t(col >> 8) / 255.f, uint8_t(col) / 255.f);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
 			glVertexAttribPointer(

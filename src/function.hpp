@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 #include <functional>
 
@@ -11,7 +13,165 @@ namespace Math{
 	typedef std::function<float(float, float)> Function2D;
 
 
-	/* MemFunction *******************************************oo
+	template<typename _T, int _Dim>
+	class FunctionalScalar
+	{
+	public:
+		static constexpr int Dimensions = _Dim;
+
+		FunctionalScalar(_T& _func, float _scalar)
+			: m_func(_func), m_scalar(_scalar)
+		{}
+
+	protected:
+		_T& m_func;
+		float m_scalar;
+	};
+
+	template<typename _T, int _Dim>
+	class FunctionalScalarAdd : public FunctionalScalar<_T, _Dim>
+	{
+	public:
+		using FunctionalScalar::FunctionalScalar;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_scalar + m_func(_val);
+		}
+	};
+
+	template<typename _T, int _Dim>
+	class FunctionalScalarMul : public FunctionalScalar<_T, _Dim>
+	{
+	public:
+		using FunctionalScalar::FunctionalScalar;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_scalar * m_func(_val);
+		}
+	};
+
+	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalBinOp
+	{
+		static_assert(_T1::Dimensions == _T2::Dimensions, "Only functions with the same number of arguments can be added.");
+	public:
+		static constexpr int Dimensions = _Dim;
+
+		FunctionalBinOp(_T1& _func1, _T2& _func2)
+			: m_func1(_func1), m_func2(_func2)
+		{
+		}
+
+	protected:
+		_T1& m_func1;
+		_T2& m_func2;
+
+	};
+
+	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalAdd : public FunctionalBinOp < _T1, _T2, _Dim>
+	{
+	public:
+		using FunctionalBinOp::FunctionalBinOp;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_func1(_val) + m_func2(_val);
+		}
+	};
+
+	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalSub : public FunctionalBinOp < _T1, _T2, _Dim>
+	{
+	public:
+		using FunctionalBinOp::FunctionalBinOp;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_func1(_val) - m_func2(_val);
+		}
+	};
+
+	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalMul : public FunctionalBinOp < _T1, _T2, _Dim>
+	{
+	public:
+		using FunctionalBinOp::FunctionalBinOp;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_func1(_val) * m_func2(_val);
+		}
+	};
+
+	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalDiv : public FunctionalBinOp < _T1, _T2, _Dim>
+	{
+
+	public:
+		using FunctionalBinOp::FunctionalBinOp;
+
+		float operator()(ArgVec<float, _Dim> _val)
+		{
+			return m_func1(_val) / m_func2(_val);
+		}
+	};
+
+	// ********************************************************************* //
+	template< typename _Super >
+	class FunctionOperation : public _Super
+	{
+	public:
+		template<typename... _Args>
+		FunctionOperation(_Args&&... _args)
+			: _Super(std::forward< _Args >(_args)...)
+		{}
+
+		//scalars
+		auto operator+(float _val)
+		{
+			return FunctionOperation<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
+		}
+
+		auto operator*(float _val)
+		{
+			return FunctionOperation<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
+		}
+
+		//binary operations
+		template<typename _T2>
+		auto operator+(_T2& _oth)
+		{
+			return FunctionOperation<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+		}
+
+		template<typename _T2>
+		auto operator-(_T2& _oth)
+		{
+			return FunctionOperation<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+		}
+
+		template<typename _T2>
+		auto operator*(_T2& _oth)
+		{
+			return FunctionOperation<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+		}
+
+		template<typename _T2>
+		auto operator/(_T2& _oth)
+		{
+			return FunctionOperation<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+		}
+	};
+
+	/* MemFunction *********************************************
 	 * Function that keeps discrete values in memory.
 	 * @param _Dimensions Data dimensions this function has.
 	 *	One corresponds to a function of the style f(x)=y.
@@ -23,7 +183,7 @@ namespace Math{
 	{
 	public:
 
-		const int Dimensions = _Dimensions;
+		static constexpr int Dimensions = _Dimensions;
 
 		MemFunction(int _size, int _xreq = 1)
 		{
@@ -31,11 +191,11 @@ namespace Math{
 		}
 
 		// value of this function is acquired by interpolation.
-		float operator()(float _arg)
+		float operator()(ArgVec<float, Dimensions> _arg)
 		{
-			float lower = floor(_arg);
-			float upper = ceil(_arg);
-			float f = _arg - lower;
+			float lower = floor(_arg[0]);
+			float upper = ceil(_arg[0]);
+			float f = _arg[0] - lower;
 
 			return interpolate(getStored((int)lower), getStored((int)upper), f);
 		}
@@ -91,40 +251,4 @@ namespace Math{
 		}
 	};
 
-	class LinearInterpolation
-	{
-	public:
-		float interpolate(float _a, float _b, float _x)
-		{
-			return _a * (1.f - _x) + _b * _x;
-		}
-	};
-
-	typedef ValueNoise<1, LinearInterpolation> LinearIntFunction;
-
-	class CosInterpolation
-	{
-	public:
-		float interpolate(float _a, float _b, float _x)
-		{
-			_x = (1.f - cos(_x * 3.1415f)) * 0.5f;
-
-			return _a * (1.f - _x) + _b * _x;
-		}
-	};
-
-	typedef ValueNoise<1, CosInterpolation> CosIntFunction;
-
-	class PolynomInterpolation
-	{
-	public:
-		float interpolate(float _a, float _b, float _x)
-		{
-			float f_2 = _x * _x;
-
-			return (_a + _b) * f_2 * _x  - (2.f * _a + _b) * f_2 + _a * _x;
-		}
-	};
-
-	typedef ValueNoise<1, PolynomInterpolation> PolynomIntFunction;
 }

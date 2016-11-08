@@ -15,6 +15,7 @@
 #include "input.hpp"
 #include "map.hpp"
 #include "graph1d.hpp"
+#include "functions2d.hpp"
 
 int main(void)
 {
@@ -55,8 +56,11 @@ int main(void)
 	Input::InputManager inputManager(*window, renderer.GetCamera());
 //	renderer.AddMesh(new Graphic::Map(glm::ivec2(16,16)));
 //	renderer.AddMesh(new Graphic::Mesh());
-	Math::PolynomIntFunction noise(20);
-	renderer.AddMesh(new Graphic::Graph1d(noise));
+	Math::LinearIntFunction linearf(20);
+	Math::CosIntFunction cosf(20);
+	renderer.AddMesh(new Graphic::Graph1d(linearf));
+	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
+	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf + 0.5f, 0.1f, 10.f, 0x00FFFFFF));
 	//test -------------------------------------------------------------
 
 

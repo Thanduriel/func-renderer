@@ -7,6 +7,6 @@ namespace Graphic{
 	class Graph1d : public Mesh
 	{
 	public:
-		Graph1d(Math::Function1D _func, float _res = 0.1f, float _size = 10.f);
+		Graph1d(Math::Function1D _func, float _res = 0.1f, float _size = 10.f, uint32_t _color = 0x0000FFFF);
 	};
 }
