@@ -12,7 +12,7 @@ namespace Math{
 		}
 	};
 
-	typedef FunctionOperation<ValueNoise<1, LinearInterpolation>> LinearIntFunction;
+	typedef NoiseInt1D<LinearInterpolation> LinearIntFunction;
 
 	class CosInterpolation
 	{
@@ -25,7 +25,7 @@ namespace Math{
 		}
 	};
 
-	typedef FunctionOperation<ValueNoise<1, CosInterpolation>> CosIntFunction;
+	typedef NoiseInt1D<CosInterpolation> CosIntFunction;
 
 	class PolynomInterpolation
 	{
@@ -38,5 +38,5 @@ namespace Math{
 		}
 	};
 
-	typedef FunctionOperation<ValueNoise<1, PolynomInterpolation>> PolynomIntFunction;
+	typedef NoiseInt1D<PolynomInterpolation> PolynomIntFunction;
 }

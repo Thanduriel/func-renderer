@@ -9,7 +9,6 @@ namespace Graphic{
 
 		for (float i = 0.f; i < _size; i += _res)
 		{
-			float test = _func(i);
 			m_vertices.emplace_back(i, _func(i), 0.f);
 			m_vertices.emplace_back(i + _res, _func(i+_res), 0.f);
 			m_vertices.emplace_back(i + _res, _func(i+_res)-0.1f, 0.f);

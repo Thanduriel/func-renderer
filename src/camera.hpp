@@ -1,5 +1,7 @@
 #pragma once
 
+#define MODE2D
+
 #include <glm.hpp>
 
 namespace Graphic{

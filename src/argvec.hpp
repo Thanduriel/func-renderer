@@ -45,12 +45,26 @@ namespace Math{
 	struct ArgVec : public Component<_ValT, _D>
 	{
 		//construct from the required amount of arguments
+		ArgVec() {};
 		ArgVec(_ValT _x){ x = _x; };
 		ArgVec(_ValT _x, _ValT _y){ x = _x; y = _y; };
 		ArgVec(_ValT _x, _ValT _y, int _z){ x = _x; y = _y; z = _z; };
 
 		// return value of _ind dimension
-		_ValT operator[](size_t _ind) { return data[_ind]; }
+		_ValT operator[](size_t _ind) const { return data[_ind]; }
+		_ValT& operator[](size_t _ind) { return data[_ind]; }
+
+		template<typename _ValOther>
+		_ValT distance(const ArgVec<_ValOther, _D>& _oth)
+		{
+			_ValT ret = 0.f;
+			for(int i = 0; i < _D; ++i)
+				ret += (data[i] - (_ValT)_oth[i]) * (data[i] - (_ValT)_oth[i]);
+
+			return sqrt(ret);
+		}
 	};
 
+	//some common types
+	typedef ArgVec<float, 2> AVec2;
 }

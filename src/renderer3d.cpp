@@ -23,11 +23,20 @@ namespace Graphic{
 	}
 
 	// ********************************************************************* //
-	void Renderer::updateBuffer(Mesh& _mesh)
+	void Renderer::updateBuffer(const VertexBuffer& _vb, int _layout)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, _mesh.GetVertices().getId());
+		glBindBuffer(GL_ARRAY_BUFFER, _vb.getId());
 		// Give our vertices to OpenGL.
-		glBufferData(GL_ARRAY_BUFFER, _mesh.GetVertices().size() * sizeof(glm::vec3), &_mesh.GetVertices()[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, _vb.size() * sizeof(glm::vec3), &_vb[0], GL_STATIC_DRAW);
+
+		glVertexAttribPointer(
+			_layout,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
 	}
 
 	// ********************************************************************* //
@@ -40,34 +49,36 @@ namespace Graphic{
 		static Graphic::Effect effect("shader/simple");
 		glUseProgram(effect.getProgId());
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 
 		GLuint MatrixID = glGetUniformLocation(effect.getProgId(), "MVP");
 		GLuint colorId = glGetUniformLocation(effect.getProgId(), "uColor");
+		GLuint lightDir = glGetUniformLocation(effect.getProgId(), "ulightDirection");
+
+#ifndef MODE2D
+		glUniform4f(lightDir, 0.f, 1.f, 0.f, 0.f);
+#else
+		glUniform4f(lightDir, 0.f, 0.f, -1.f, 0.f);
+#endif
 
 		for (auto& mesh : m_meshes)
 		{
 			const VertexBuffer& vb = mesh->GetVertices();
-			if (vb.isDirty()) updateBuffer(*mesh);
+			if (vb.isDirty()) { updateBuffer(vb); mesh->updateNormals(); }
+			if (mesh->GetNormals().isDirty()) updateBuffer(mesh->GetNormals(), 1);
 
+			//set uniforms of the model
 			glm::mat4 mvp = m_camera.GetViewProjection() * mesh->GetModelMatrix();
-
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 			uint32_t col = mesh->GetColor();
 			glUniform4f(colorId, uint8_t(col >> 24) / 255.f, uint8_t(col >> 16) / 255.f, uint8_t(col >> 8) / 255.f, uint8_t(col) / 255.f);
 
-			glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
-			glVertexAttribPointer(
-				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
-				);
+	//		glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
 			
-			glDrawArrays(GL_TRIANGLES, 0, vb.size()); // GL_TRIANGLES
+			glDrawArrays(GL_TRIANGLES, 0, vb.size());
 		}
 		glDisableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 
 		glfwSwapBuffers(_window);
 		glfwPollEvents();

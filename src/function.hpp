@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <functional>
+#include <array>
 
 #include "glm.hpp"
 #include "random.hpp"
@@ -10,7 +11,7 @@
 namespace Math{
 	
 	typedef std::function<float(float)> Function1D;
-	typedef std::function<float(float, float)> Function2D;
+	typedef std::function<float(ArgVec<float, 2>)> Function2D;
 
 
 	template<typename _T, int _Dim>
@@ -182,6 +183,8 @@ namespace Math{
 	class MemFunction : public _Int
 	{
 	public:
+		//argument type used to access stored values
+		typedef ArgVec<int, _Dimensions> KeyType;
 
 		static constexpr int Dimensions = _Dimensions;
 
@@ -191,17 +194,30 @@ namespace Math{
 		}
 
 		// value of this function is acquired by interpolation.
-		float operator()(ArgVec<float, Dimensions> _arg)
+		float operator()(ArgVec<float, _Dimensions> _arg)
 		{
-			float lower = floor(_arg[0]);
-			float upper = ceil(_arg[0]);
-			float f = _arg[0] - lower;
+			std::array<KeyType, 1 << Dimensions> edgePoints;
+			ArgVec<float, 1 << Dimensions> values;
+			ArgVec<float, 1 << Dimensions> distances;
 
-			return interpolate(getStored((int)lower), getStored((int)upper), f);
+			int border[Dimensions * 2];
+			for (int i = 0; i < Dimensions; ++i)
+			{
+				int i2 = i * 2;
+				border[i2] = (int)floor(_arg[i]);
+				border[i2+1] = (int)ceil(_arg[i]);
+			}
+			for (int i = 0; i < 1 << Dimensions; ++i)
+			{
+				for (int j = 0; j < Dimensions; ++j)
+					edgePoints[i][j] = border[2 * j + (1 & (i >> j))];
+			//	float f = _arg[0] - lower;
+
+				values[i] = getStored(edgePoints[i]);
+				distances[i] = _arg.distance(edgePoints[i]);
+			}
+			return interpolate(values, distances);
 		}
-
-		//argument type used to access stored values
-		typedef ArgVec<int, _Dimensions> KeyType;
 
 	protected:
 		// Calculates the index at which the element can be found in m_values.
@@ -251,4 +267,20 @@ namespace Math{
 		}
 	};
 
+
+	// ********************************************************************* //
+	//interpolation interface
+
+	template<typename _Int>
+	class Interpolation1D : public _Int
+	{
+	public:
+		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 2> _distances)
+		{
+			return _Int::interpolate(_values[0], _values[1], _distances[0]);
+		}
+	};
+
+	template<typename _Int>
+	using NoiseInt1D = FunctionOperation<ValueNoise<1, Interpolation1D<_Int>>>;
 }

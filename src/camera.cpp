@@ -3,8 +3,6 @@
 
 using namespace glm;
 
-#define MODE2D
-
 namespace Graphic{
 	Camera::Camera(glm::vec3 _position, glm::vec3 _origin, float _fov)
 		: m_viewMatrix(glm::lookAt(_position, _origin, vec3(0.f, 1.f, 0.f))),

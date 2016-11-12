@@ -1,10 +1,14 @@
 #version 330 core
 
 uniform vec4 uColor;
+uniform vec4 ulightDirection;
+
+in vec4 normal_cameraspace;
 
 out vec3 color;
 
 void main()
 {
-	color = uColor.xyz;//vec3(0,0,1);
+	float cosTheta = clamp( dot( normal_cameraspace, ulightDirection ), 0,1 );
+	color = uColor.xyz * cosTheta;
 }
