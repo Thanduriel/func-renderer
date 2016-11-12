@@ -13,7 +13,9 @@ namespace Graphic{
 	Renderer::Renderer():
 		m_camera(glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f))
 	{
-		
+		glEnable(GL_DEPTH_TEST);
+		// Accept fragment if it closer to the camera than the former one
+		glDepthFunc(GL_LESS);
 	}
 
 	// ********************************************************************* //
@@ -25,6 +27,7 @@ namespace Graphic{
 	// ********************************************************************* //
 	void Renderer::updateBuffer(const VertexBuffer& _vb, int _layout)
 	{
+		if (!_vb.size()) return;
 		glBindBuffer(GL_ARRAY_BUFFER, _vb.getId());
 		// Give our vertices to OpenGL.
 		glBufferData(GL_ARRAY_BUFFER, _vb.size() * sizeof(glm::vec3), &_vb[0], GL_STATIC_DRAW);

@@ -6,9 +6,15 @@ namespace Math {
 	class LinearInterpolation2D
 	{
 	public:
-		float interpolate(float _a, float _b, float _x)
+		float interpolate(ArgVec<float, 4> _values, ArgVec<float, 4> _distances)
 		{
-			return _a * (1.f - _x) + _b * _x;
+			float res = 0.f;
+			for (int i = 0; i < 4; ++i)
+			{
+				res = _values[i]/* * (1.f - _distances[i])*/;
+			}
+
+			return _values[0];
 		}
 	};
 

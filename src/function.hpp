@@ -188,7 +188,8 @@ namespace Math{
 
 		static constexpr int Dimensions = _Dimensions;
 
-		MemFunction(int _size, int _xreq = 1)
+		MemFunction(int _size, int _xreq = 1):
+			m_size(_size)
 		{
 			m_values.resize((int)pow(_size, _Dimensions));
 		}

@@ -18,12 +18,14 @@ namespace Graphic{
 		for (float ix = 0; ix < _size; ix += _res)
 			for (float iy = 0; iy < _size; iy += _res)
 			{
-				m_vertices.emplace_back((float)ix, _func(AVec2(ix,iy)), (float)iy);
-				m_vertices.emplace_back((float)ix, _func(AVec2(ix, iy+_res)), (float)(iy + 1));
-				m_vertices.emplace_back((float)(ix + 1), _func(AVec2(ix+_res, iy+_res)), (float)iy);
-				m_vertices.emplace_back((float)(ix + 1), _func(AVec2(ix + _res, iy + _res)), (float)(iy + 1));
-				m_vertices.emplace_back((float)(ix + 1), _func(AVec2(ix + _res, iy)), (float)iy);
-				m_vertices.emplace_back((float)ix, _func(AVec2(ix, iy + _res)), (float)(iy + 1));
+				float ixr = ix + _res;
+				float iyr = iy + _res;
+				m_vertices.emplace_back(ix, _func(AVec2(ix,iy)), iy);
+				m_vertices.emplace_back(ix, _func(AVec2(ix, iyr)), iyr);
+				m_vertices.emplace_back(ixr, _func(AVec2(ixr, iy)), iy);
+				m_vertices.emplace_back(ixr, _func(AVec2(ixr, iyr)), iyr);
+				m_vertices.emplace_back(ixr, _func(AVec2(ixr, iy)), iy);
+				m_vertices.emplace_back(ix, _func(AVec2(ix, iyr)), iyr);
 			}
 	}
 }

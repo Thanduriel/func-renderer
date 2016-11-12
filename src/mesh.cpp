@@ -53,8 +53,8 @@ namespace Graphic{
 	Mesh::Mesh():
 		m_modelMatrix(1.f)
 	{
-		m_vertices.resize(sizeof(g_vertex_buffer_data)/(3*sizeof(GLfloat)));
-		memcpy(&m_vertices[0], g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
+//		m_vertices.resize(sizeof(g_vertex_buffer_data)/(3*sizeof(GLfloat)));
+//		memcpy(&m_vertices[0], g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
 	}
 
 	void Mesh::updateNormals()

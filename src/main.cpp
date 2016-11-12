@@ -56,13 +56,13 @@ int main(void)
 	Graphic::Renderer renderer;
 	Input::InputManager inputManager(*window, renderer.GetCamera());
 	Math::LinearIntFunction2D linearF2D(20);
-//	renderer.AddMesh(new Graphic::Graph2D(linearF2D));
-//	renderer.AddMesh(new Graphic::Mesh());
+	renderer.AddMesh(new Graphic::Graph2D(linearF2D));
+	renderer.AddMesh(new Graphic::Mesh());
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
-	renderer.AddMesh(new Graphic::Graph1d(linearf));
-	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
-	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+//	renderer.AddMesh(new Graphic::Graph1d(linearf));
+//	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
+//	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
 	//test -------------------------------------------------------------
 
 

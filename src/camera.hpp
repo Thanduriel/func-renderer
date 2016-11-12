@@ -1,6 +1,6 @@
 #pragma once
 
-#define MODE2D
+//#define MODE2D
 
 #include <glm.hpp>
 
