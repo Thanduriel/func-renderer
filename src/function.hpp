@@ -179,7 +179,7 @@ namespace Math{
 	 * @param _Int A type that implements:
 	 *	float interpolate(float _a, float _b, float _x)
 	 */
-	template< int _Dimensions, typename _Int>
+	template< int _Dimensions, typename _ValueT, typename _Int>
 	class MemFunction : public _Int
 	{
 	public:
@@ -188,8 +188,9 @@ namespace Math{
 
 		static constexpr int Dimensions = _Dimensions;
 
-		MemFunction(int _size, int _xreq = 1):
-			m_size(_size)
+		MemFunction(int _size, float _freq = 1.f):
+			m_size(_size),
+			m_frequency(_freq)
 		{
 			m_values.resize((int)pow(_size, _Dimensions));
 		}
@@ -197,9 +198,11 @@ namespace Math{
 		// value of this function is acquired by interpolation.
 		float operator()(ArgVec<float, _Dimensions> _arg)
 		{
+			for (int i = 0; i < Dimensions; ++i)
+				_arg[i] *= m_frequency;
 			std::array<KeyType, 1 << Dimensions> edgePoints;
-			ArgVec<float, 1 << Dimensions> values;
-			ArgVec<float, 1 << Dimensions> distances;
+			ArgVec<_ValueT, 1 << Dimensions> values;
+			ArgVec<float, Dimensions> distances;
 
 			int border[Dimensions * 2];
 			for (int i = 0; i < Dimensions; ++i)
@@ -215,8 +218,10 @@ namespace Math{
 			//	float f = _arg[0] - lower;
 
 				values[i] = getStored(edgePoints[i]);
-				distances[i] = _arg.distance(edgePoints[i]);
 			}
+			for(int i = 0; i < Dimensions; ++i)
+				distances[i] = _arg[i] - edgePoints[0][i];
+
 			return interpolate(values, distances);
 		}
 
@@ -236,37 +241,56 @@ namespace Math{
 		}
 
 		// Return value stored at _arg.
-		float getStored(KeyType _arg)
+		_ValueT getStored(KeyType _arg)
 		{
 			return m_values[getIndex(_arg)];
 		}
 
 		// Assigns all discrete values using _init.
-		void setAllStored(std::function<float(KeyType)> _init)
+		void setAllStored(std::function<_ValueT(KeyType)> _init)
 		{
 			for (int i = 0; i < (int)m_values.size(); ++i)
 				m_values[i] = _init(i);
 		}
 //	private:
-		std::vector <float> m_values;
+		std::vector <_ValueT> m_values;
 		int m_size; //size in any direction
+		float m_frequency;
 	};
 
 	// ********************************************************************* //
 	template< int _Dimensions, typename _Int >
-	class ValueNoise : public MemFunction<_Dimensions, _Int>
+	class ValueNoise : public MemFunction<_Dimensions, float, _Int>
 	{
 	public:
-		ValueNoise(int _size, int _xreq = 1)
-			: MemFunction(_size, _xreq)
+		ValueNoise(int _size, float _min = -1.f, float _max = 1.f)
+			: MemFunction(_size)
 		{
 			Util::Random rng(0x1a23f);
-			setAllStored([&](MemFunction<_Dimensions, _Int>::KeyType _arg)
+			setAllStored([&](MemFunction<_Dimensions, float, _Int>::KeyType _arg)
 			{
-				return rng.uniform(-1.f, 1.f);
+				return rng.uniform(_min, _max);
 			});
 		}
 	};
+
+	// ********************************************************************* //
+	template< int _Dimensions, typename _Int >
+	class GradientNoise : public MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>
+	{
+	public:
+		GradientNoise(int _size, float _freq = 1.f)
+			: MemFunction(_size, _freq)
+		{
+			Util::Random rng(0x1a2e3f);
+			setAllStored([&](MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>::KeyType _arg)
+			{
+				return rng.vector();
+			});
+		}
+	};
+
+
 
 
 	// ********************************************************************* //
@@ -276,7 +300,7 @@ namespace Math{
 	class Interpolation1D : public _Int
 	{
 	public:
-		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 2> _distances)
+		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances)
 		{
 			return _Int::interpolate(_values[0], _values[1], _distances[0]);
 		}

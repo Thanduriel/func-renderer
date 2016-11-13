@@ -18,12 +18,12 @@ namespace Input{
 		double x, y;
 		glfwGetCursorPos(&m_window, &x, &y);
 
-		float dx = 0.05f * _deltaTime * float(width_2 - x);
-		float dy = 0.05f * _deltaTime * float(height_2 - y);
+		float dx = 0.2f * _deltaTime * float(width_2 - x);
+		float dy = 0.2f * _deltaTime * float(height_2 - y);
 		// mouse movement
 		glfwSetCursorPos(&m_window, width_2, height_2);
 
-		float speed = 1.f;
+		float speed = 4.f;
 		glm::vec2 position(0.f);
 		// Move forward
 		if (glfwGetKey(&m_window,GLFW_KEY_W) == GLFW_PRESS){

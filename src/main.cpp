@@ -1,4 +1,6 @@
 #include <iostream>
+#include <time.h>
+#include <string>
 
 #include <gl/glew.h>
 
@@ -55,9 +57,9 @@ int main(void)
 
 	Graphic::Renderer renderer;
 	Input::InputManager inputManager(*window, renderer.GetCamera());
-	Math::LinearIntFunction2D linearF2D(20);
-	renderer.AddMesh(new Graphic::Graph2D(linearF2D));
-	renderer.AddMesh(new Graphic::Mesh());
+	Math::CubicIntFunction2D linearF2D(32, 0.2f);
+	Math::CubicIntFunction2D cubicF2D3(132, 3.f);
+	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f));
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
 //	renderer.AddMesh(new Graphic::Graph1d(linearf));
@@ -65,11 +67,17 @@ int main(void)
 //	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
 	//test -------------------------------------------------------------
 
+	clock_t c = clock();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-		inputManager.Process(1.f / 60.f);
+		float frameTime = float(clock() - c) / CLOCKS_PER_SEC;
+		c = clock();
+
+		glfwSetWindowTitle(window, std::to_string(frameTime).c_str());
+		
+		inputManager.Process(frameTime);
 		renderer.draw(window);
 	}
 

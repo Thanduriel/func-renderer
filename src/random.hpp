@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "argvec.hpp"
 
 namespace Util{
 	class Random
@@ -15,6 +16,8 @@ namespace Util{
 		/// \brief Create the next uniform distributed sample in the given
 		///		integer range (inclusive both boundaries).
 		int32_t uniform(int32_t _min, int32_t _max);
+
+		Math::ArgVec<float, 2> vector();
 	private:
 		//actual generator
 		uint32_t Xorshift128();

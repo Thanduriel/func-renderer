@@ -34,6 +34,13 @@ namespace Util{
 	}
 
 	// ********************************************************************* //
+	Math::ArgVec<float, 2> Random::vector()
+	{
+	//	Math::ArgVec<float, 2> vec;
+		return Math::AVec2(uniform(-1.f,1.f), uniform(-1.f, 1.f));
+	}
+
+	// ********************************************************************* //
 	uint32_t Random::Xorshift128()
 	{
 		uint32_t tmp = m_state[0] ^ (m_state[0] << 11);
