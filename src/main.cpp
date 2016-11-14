@@ -59,7 +59,7 @@ int main(void)
 	Input::InputManager inputManager(*window, renderer.GetCamera());
 	Math::CubicIntFunction2D linearF2D(32, 0.2f);
 	Math::CubicIntFunction2D cubicF2D3(132, 3.f);
-	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f));
+	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f, 20.f));
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
 //	renderer.AddMesh(new Graphic::Graph1d(linearf));

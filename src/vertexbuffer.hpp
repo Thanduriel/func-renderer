@@ -8,7 +8,8 @@
 #include <gtc/matrix_transform.hpp>
 
 namespace Graphic{
-	class VertexBuffer : public std::vector<glm::vec3>
+	template<typename _T = glm::vec3, unsigned int _ArrayType = GL_ARRAY_BUFFER>
+	class VertexBuffer : public std::vector<_T>
 	{
 	public:
 		VertexBuffer() : m_isDirty(true)
@@ -21,6 +22,13 @@ namespace Graphic{
 		bool isDirty() const { return m_isDirty; }
 
 		int getId() const { return m_id; }
+
+		void upload() const
+		{
+			glBindBuffer(_ArrayType, m_id);
+			// Give our vertices to OpenGL.
+			glBufferData(_ArrayType, size() * sizeof(_T), &*begin(), GL_STATIC_DRAW);
+		}
 	private:
 		bool m_isDirty;
 

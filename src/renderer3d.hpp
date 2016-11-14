@@ -17,13 +17,12 @@ namespace Graphic{
 
 		void draw(GLFWwindow* _window);
 
-		void AddMesh(Mesh* _mesh) { m_meshes.push_back(_mesh); updateBuffer(_mesh->GetVertices()); }
+		void AddMesh(Mesh* _mesh);
 
 		Camera& GetCamera() { return m_camera; }
 
 		void setRenderMode(RenderModes _mode);
 	private:
-		void updateBuffer(const VertexBuffer& _vb, int _layout = 0);
 
 		Camera m_camera;
 
