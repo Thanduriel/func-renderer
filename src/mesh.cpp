@@ -89,12 +89,12 @@ namespace Graphic{
 
 	void Mesh::indexVBO()
 	{
-		typedef std::pair<vec3, unsigned short> NormalInd;
+		typedef std::pair<vec3, uint32_t> NormalInd;
 
 		std::unordered_map< vec3, NormalInd, KeyFuncs > indexedVerts;
 		m_indices.reserve(m_vertices.size());
 
-		unsigned short ind = 0;
+		uint32_t ind = 0;
 
 		for (int i = 0; i < (int)m_vertices.size(); ++i)
 		{

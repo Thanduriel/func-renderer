@@ -11,7 +11,7 @@ namespace Graphic{
 
 		const VertexBuffer<>& GetVertices() const { return m_vertices; }
 		const VertexBuffer<>& GetNormals() const { return m_normals; }
-		const VertexBuffer<unsigned short, GL_ELEMENT_ARRAY_BUFFER>& GetIndices() const { return m_indices; }
+		const VertexBuffer<uint32_t, GL_ELEMENT_ARRAY_BUFFER>& GetIndices() const { return m_indices; }
 
 		const glm::mat4& GetModelMatrix() const { return m_modelMatrix; }
 		uint32_t GetColor() const { return m_color; }
@@ -24,7 +24,7 @@ namespace Graphic{
 
 		glm::mat4 m_modelMatrix;
 
-		VertexBuffer<unsigned short, GL_ELEMENT_ARRAY_BUFFER> m_indices;
+		VertexBuffer<uint32_t, GL_ELEMENT_ARRAY_BUFFER> m_indices;
 		VertexBuffer<> m_vertices;
 		VertexBuffer<> m_normals;
 

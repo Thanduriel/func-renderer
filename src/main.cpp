@@ -9,6 +9,7 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 
+#include "config.hpp"
 #include "effect.hpp"
 #include "globals.hpp"
 #include "renderer3d.hpp"
@@ -54,17 +55,23 @@ int main(void)
 	GLuint VertexArrayID;
 	glGenVertexArrays(1, &VertexArrayID);
 	glBindVertexArray(VertexArrayID);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 	Graphic::Renderer renderer;
 	Input::InputManager inputManager(*window, renderer.GetCamera());
-	Math::CubicIntFunction2D linearF2D(32, 0.2f);
-	Math::CubicIntFunction2D cubicF2D3(132, 3.f);
-	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f, 20.f));
+
+#ifndef MODE2D
+	Math::CubicIntFunction2D linearF2D(151, 0.2f);
+	Math::CubicIntFunction2D cubicF2D3(100, 1.5f);
+	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f, 30.f));
+#else
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
-//	renderer.AddMesh(new Graphic::Graph1d(linearf));
-//	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
-//	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+	renderer.AddMesh(new Graphic::Graph1d(linearf));
+	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
+	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+
+#endif
 	//test -------------------------------------------------------------
 
 	clock_t c = clock();

@@ -1,4 +1,5 @@
 #include "renderer3d.hpp"
+#include "config.hpp"
 #include <gl/glew.h>
 
 #include "GLFW/glfw3.h"
@@ -96,7 +97,7 @@ namespace Graphic{
 			glDrawElements(
 				GL_TRIANGLES,      // mode
 				mesh->GetIndices().size(),    // count
-				GL_UNSIGNED_SHORT,   // type
+				GL_UNSIGNED_INT,   // type
 				(void*)0           // element array buffer offset
 			);
 			

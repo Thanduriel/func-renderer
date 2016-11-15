@@ -1,5 +1,6 @@
 #include "camera.hpp"
 #include <gtc/matrix_transform.hpp>
+#include "config.hpp"
 
 using namespace glm;
 
