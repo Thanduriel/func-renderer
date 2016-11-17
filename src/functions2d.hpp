@@ -17,7 +17,7 @@ namespace Math {
 		}
 	};
 
-	typedef FunctionOperation<ValueNoise<2, LinearInterpolation2D>> LinearIntFunction2D;
+	typedef FO<ValueNoise<2, LinearInterpolation2D>> LinearIntFunction2D;
 
 	class CubicInterpolation2D : public PolynomInterpolation, LinearInterpolation2D
 	{
@@ -34,6 +34,6 @@ namespace Math {
 		}
 	};
 
-	typedef FunctionOperation<GradientNoise<2, CubicInterpolation2D>> CubicIntFunction2D;
+	typedef FO<GradientNoise<2, CubicInterpolation2D>> CubicIntFunction2D;
 
 }

@@ -126,51 +126,95 @@ namespace Math{
 	};
 
 	// ********************************************************************* //
+	template<typename _T1, typename _T2, int _Dim>
+	class FunctionalComposition
+	{
+		static_assert(_T1::Dimensions == 1, "The outer function must be one dimensional.");
+	public:
+
+		static constexpr int Dimensions = _Dim;
+
+		FunctionalComposition(_T1& _func1, _T2& _func2)
+			: m_func1(_func1), m_func2(_func2)
+		{
+		}
+
+		float operator()(ArgVec<float, _T2::Dimensions> _val)
+		{
+			return m_func1(m_func2(_val));
+		}
+
+	private:
+		_T1& m_func1;
+		_T2& m_func2;
+	};
+
+	// ********************************************************************* //
 	template< typename _Super >
-	class FunctionOperation : public _Super
+	class FO : public _Super
 	{
 	public:
 		template<typename... _Args>
-		FunctionOperation(_Args&&... _args)
+		FO(_Args&&... _args)
 			: _Super(std::forward< _Args >(_args)...)
 		{}
 
 		//scalars
 		auto operator+(float _val)
 		{
-			return FunctionOperation<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
+			return FO<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
 		auto operator*(float _val)
 		{
-			return FunctionOperation<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
+			return FO<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
 		//binary operations
 		template<typename _T2>
 		auto operator+(_T2& _oth)
 		{
-			return FunctionOperation<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FO<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator-(_T2& _oth)
 		{
-			return FunctionOperation<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FO<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator*(_T2& _oth)
 		{
-			return FunctionOperation<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FO<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator/(_T2& _oth)
 		{
-			return FunctionOperation<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FO<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
+
+		//composition
+		template<typename _T2>
+		auto operator<(_T2& _oth)
+		{
+			return FO<FunctionalComposition<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+		}
+
 	};
+
+	//operators for lhs float
+	template <typename _T>
+	static auto operator+(float _val, _T& _super)
+	{
+		return FO<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
+	}
+	template <typename _T>
+	static auto operator*(float _val, _T& _super)
+	{
+		return FO<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
+	}
 
 	/* MemFunction *********************************************
 	 * Function that keeps discrete values in memory.
@@ -307,5 +351,5 @@ namespace Math{
 	};
 
 	template<typename _Int>
-	using NoiseInt1D = FunctionOperation<ValueNoise<1, Interpolation1D<_Int>>>;
+	using NoiseInt1D = FO<ValueNoise<1, Interpolation1D<_Int>>>;
 }

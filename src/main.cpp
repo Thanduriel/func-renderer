@@ -20,6 +20,7 @@
 #include "graph1d.hpp"
 #include "functions1d.hpp"
 #include "functions2d.hpp"
+#include "modifiers.hpp"
 
 int main(void)
 {
@@ -61,9 +62,12 @@ int main(void)
 	Input::InputManager inputManager(*window, renderer.GetCamera());
 
 #ifndef MODE2D
-	Math::CubicIntFunction2D linearF2D(151, 0.2f);
-	Math::CubicIntFunction2D cubicF2D3(100, 1.5f);
-	renderer.AddMesh(new Graphic::Graph2D(linearF2D * 4.f + cubicF2D3 * 0.3f, 0.1f, 30.f));
+	Math::CubicIntFunction2D base(1501, 0.05f);
+	Math::CubicIntFunction2D medium(1000, 0.2f);
+	Math::CubicIntFunction2D small(1000, 1.0f);
+	Math::LinearIntFunction linearf(1000);
+	Math::ClampFunction clamp(0.5f, 1.f);
+	renderer.AddMesh(new Graphic::Graph2D(clamp<((40.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
 #else
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
