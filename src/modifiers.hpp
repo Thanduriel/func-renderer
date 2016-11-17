@@ -4,6 +4,10 @@
 
 namespace Math {
 
+	/* Modifier ************************************
+	 * A one dimensional function used to manipulate the output of another function.
+	 */
+
 	template<typename _Mod>
 	class Modifier : public _Mod
 	{
@@ -36,5 +40,5 @@ namespace Math {
 		float m_upper;
 	};
 
-	typedef FO<Modifier<Clamp>> ClampFunction;
+	typedef FuncOp<Modifier<Clamp>> ClampFunction;
 }

@@ -10,10 +10,12 @@
 
 namespace Math{
 	
+	// common used function signatures
 	typedef std::function<float(float)> Function1D;
 	typedef std::function<float(ArgVec<float, 2>)> Function2D;
 
 
+	// individual operations
 	template<typename _T, int _Dim>
 	class FunctionalScalar
 	{
@@ -150,56 +152,59 @@ namespace Math{
 	};
 
 	// ********************************************************************* //
+	// This type gives the given _Super type algebraic operations.
+	// The name of this class should be short to avoid warning C4503
+	// "decorated name length exceeded, name was truncated"
 	template< typename _Super >
-	class FO : public _Super
+	class FuncOp : public _Super
 	{
 	public:
 		template<typename... _Args>
-		FO(_Args&&... _args)
+		FuncOp(_Args&&... _args)
 			: _Super(std::forward< _Args >(_args)...)
 		{}
 
 		//scalars
 		auto operator+(float _val)
 		{
-			return FO<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
+			return FuncOp<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
 		auto operator*(float _val)
 		{
-			return FO<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
+			return FuncOp<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
 		//binary operations
 		template<typename _T2>
 		auto operator+(_T2& _oth)
 		{
-			return FO<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator-(_T2& _oth)
 		{
-			return FO<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator*(_T2& _oth)
 		{
-			return FO<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator/(_T2& _oth)
 		{
-			return FO<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		//composition
 		template<typename _T2>
 		auto operator<(_T2& _oth)
 		{
-			return FO<FunctionalComposition<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalComposition<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 	};
@@ -208,12 +213,12 @@ namespace Math{
 	template <typename _T>
 	static auto operator+(float _val, _T& _super)
 	{
-		return FO<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
+		return FuncOp<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
 	}
 	template <typename _T>
 	static auto operator*(float _val, _T& _super)
 	{
-		return FO<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
+		return FuncOp<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
 	}
 
 	/* MemFunction *********************************************
@@ -302,7 +307,9 @@ namespace Math{
 		float m_frequency;
 	};
 
-	// ********************************************************************* //
+	/* ValueNoise ********************************************************** //
+	 * A memory based function with one dimensional random values.
+	 */
 	template< int _Dimensions, typename _Int >
 	class ValueNoise : public MemFunction<_Dimensions, float, _Int>
 	{
@@ -318,7 +325,10 @@ namespace Math{
 		}
 	};
 
-	// ********************************************************************* //
+	/* GradientNoise ******************************************************* //
+	* A memory based function with n dimensional values in [-1,1] that can be interpreted
+	* as gradients of the function.
+	*/
 	template< int _Dimensions, typename _Int >
 	class GradientNoise : public MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>
 	{
@@ -351,5 +361,5 @@ namespace Math{
 	};
 
 	template<typename _Int>
-	using NoiseInt1D = FO<ValueNoise<1, Interpolation1D<_Int>>>;
+	using NoiseInt1D = FuncOp<ValueNoise<1, Interpolation1D<_Int>>>;
 }
