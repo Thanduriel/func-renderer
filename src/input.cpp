@@ -52,7 +52,12 @@ namespace Input{
 		else if (glfwGetKey(&m_window, GLFW_KEY_3))
 			m_renderer.setRenderMode(Graphic::RenderModes::Textured);
 
+		//reset camera
 		if (glfwGetKey(&m_window, GLFW_KEY_0))
 			m_camera.reset();
+
+		// close window
+		if (glfwGetKey(&m_window, GLFW_KEY_ESCAPE))
+			glfwSetWindowShouldClose(&m_window, 1);
 	}
 }

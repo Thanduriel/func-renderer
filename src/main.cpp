@@ -66,8 +66,8 @@ int main(void)
 	Math::CubicIntFunction2D medium(1000, 0.2f);
 	Math::CubicIntFunction2D small(1000, 1.0f);
 	Math::LinearIntFunction linearf(1000);
-	Math::ClampFunction clamp(0.5f, 1.f);
-	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((40.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 10.f));
+	Math::ClampFunction clamp(0.1f, 4.f);
+	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((40.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
 #else
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);

@@ -65,10 +65,12 @@ namespace Graphic{
 		GLuint colorId = glGetUniformLocation(effect.getProgId(), "uColor");
 		GLuint lightDir = glGetUniformLocation(effect.getProgId(), "ulightDirection");
 		GLuint textureSamp = glGetUniformLocation(effect.getProgId(), "utextureSampler");
+		GLuint textureSamp2 = glGetUniformLocation(effect.getProgId(), "utextureSampler2");
 
 		static Texture texture("texture/grass.DDS");
+		static Texture textureRock("texture/rock.DDS");
 #ifndef MODE2D
-		glUniform4f(lightDir, 0.f, 1.f, 0.f, 0.f);
+		glUniform4f(lightDir, 0.4472f, 0.8944f, 0.f, 0.f);
 #else
 		glUniform4f(lightDir, 0.f, 0.f, -1.f, 0.f);
 #endif
@@ -88,6 +90,11 @@ namespace Graphic{
 			glBindTexture(GL_TEXTURE_2D, texture.getId());
 			// Texture Unit 0
 			glUniform1i(textureSamp, 0);
+
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, textureRock.getId());
+			// Texture Unit 1
+			glUniform1i(textureSamp2, 1);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
 			glVertexAttribPointer(
