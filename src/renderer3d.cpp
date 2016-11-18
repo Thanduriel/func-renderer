@@ -8,11 +8,13 @@
 #include <gtc/matrix_transform.hpp>
 
 #include "effect.hpp"
+#include "texture.hpp"
 
 namespace Graphic{
 
 	Renderer::Renderer():
-		m_camera(glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f))
+		m_camera(glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f)),
+		m_renderMode(RenderModes::Simple)
 	{
 		glEnable(GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
@@ -24,7 +26,11 @@ namespace Graphic{
 	// ********************************************************************* //
 	void Renderer::setRenderMode(RenderModes _mode)
 	{
-
+		m_renderMode = _mode;
+		if(_mode == RenderModes::WireFrame)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
 	void Renderer::AddMesh(Mesh* _mesh)
@@ -41,11 +47,13 @@ namespace Graphic{
 	// ********************************************************************* //
 	void Renderer::draw(GLFWwindow* _window)
 	{
-		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+		static Graphic::Effect effectTextured("shader/textured");
+		static Graphic::Effect effectSimple("shader/simple");
+		Effect& effect = m_renderMode == RenderModes::Simple ? effectSimple : effectTextured;
+
+		glClearColor(0.0f, 1.0f, 0.f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//todo build effect management
-		static Graphic::Effect effect("shader/simple");
 		glUseProgram(effect.getProgId());
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
@@ -53,9 +61,12 @@ namespace Graphic{
 
 
 		GLuint MatrixID = glGetUniformLocation(effect.getProgId(), "MVP");
+		GLuint mmID = glGetUniformLocation(effect.getProgId(), "M");
 		GLuint colorId = glGetUniformLocation(effect.getProgId(), "uColor");
 		GLuint lightDir = glGetUniformLocation(effect.getProgId(), "ulightDirection");
+		GLuint textureSamp = glGetUniformLocation(effect.getProgId(), "utextureSampler");
 
+		static Texture texture("texture/grass.DDS");
 #ifndef MODE2D
 		glUniform4f(lightDir, 0.f, 1.f, 0.f, 0.f);
 #else
@@ -69,8 +80,14 @@ namespace Graphic{
 			//set uniforms of the model
 			glm::mat4 mvp = m_camera.GetViewProjection() * mesh->GetModelMatrix();
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
+			glUniformMatrix4fv(mmID, 1, GL_FALSE, &mesh->GetModelMatrix()[0][0]);
 			uint32_t col = mesh->GetColor();
 			glUniform4f(colorId, uint8_t(col >> 24) / 255.f, uint8_t(col >> 16) / 255.f, uint8_t(col >> 8) / 255.f, uint8_t(col) / 255.f);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture.getId());
+			// Texture Unit 0
+			glUniform1i(textureSamp, 0);
 
 			glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
 			glVertexAttribPointer(

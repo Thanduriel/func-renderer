@@ -2,13 +2,16 @@
 
 uniform vec4 uColor;
 uniform vec4 ulightDirection;
+uniform sampler2D utextureSampler;
 
 in vec4 normal_cameraspace;
+in vec4 positionWorldspace;
 
 out vec3 color;
 
 void main()
 {
 	float cosTheta = clamp( dot( normal_cameraspace, ulightDirection ), 0,1 );
+
 	color = uColor.xyz * cosTheta;
 }

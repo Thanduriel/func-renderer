@@ -6,9 +6,10 @@
 using namespace glm;
 
 namespace Input{
-	InputManager::InputManager(GLFWwindow& _window, Graphic::Camera& _camera) :
+	InputManager::InputManager(GLFWwindow& _window, Graphic::Camera& _camera, Graphic::Renderer& _renderer) :
 		m_camera(_camera),
-		m_window(_window)
+		m_window(_window),
+		m_renderer(_renderer)
 	{}
 
 	void InputManager::Process(float _deltaTime)
@@ -45,9 +46,11 @@ namespace Input{
 
 		//other options
 		if (glfwGetKey(&m_window, GLFW_KEY_1))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+			m_renderer.setRenderMode(Graphic::RenderModes::WireFrame);
 		else if (glfwGetKey(&m_window, GLFW_KEY_2))
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			m_renderer.setRenderMode(Graphic::RenderModes::Simple);
+		else if (glfwGetKey(&m_window, GLFW_KEY_3))
+			m_renderer.setRenderMode(Graphic::RenderModes::Textured);
 
 		if (glfwGetKey(&m_window, GLFW_KEY_0))
 			m_camera.reset();

@@ -6,8 +6,9 @@
 namespace Graphic{
 
 	enum class RenderModes{
-		Lines,
-		Triangles
+		Simple,
+		Textured,
+		WireFrame
 	};
 
 	class Renderer
@@ -23,7 +24,7 @@ namespace Graphic{
 
 		void setRenderMode(RenderModes _mode);
 	private:
-
+		RenderModes m_renderMode;
 		Camera m_camera;
 
 		std::vector<Mesh*> m_meshes;
