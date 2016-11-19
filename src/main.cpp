@@ -66,14 +66,18 @@ int main(void)
 	Math::CubicIntFunction2D medium(1000, 0.2f);
 	Math::CubicIntFunction2D small(1000, 1.0f);
 	Math::LinearIntFunction linearf(1000);
-	Math::ClampFunction clamp(0.1f, 4.f);
-	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((40.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
+	Math::ClampFunction clamp(0.1f, 6.f);
+//	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((16.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
+	Math::DistanceFunction2D distF;
+	renderer.AddMesh(new Graphic::Graph2D(clamp<distF, 0.1f, 40.f));
 #else
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
-	renderer.AddMesh(new Graphic::Graph1d(linearf));
-	renderer.AddMesh(new Graphic::Graph1d(cosf + 0.5f, 0.1f, 10.f, 0xFF0000FF));
-	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+	Math::PolynomIntFunction polf(20);
+//	renderer.AddMesh(new Graphic::Graph1d(linearf));
+//	renderer.AddMesh(new Graphic::Graph1d(cosf, 0.1f, 10.f, 0xFF0000FF));
+//	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+	renderer.AddMesh(new Graphic::Graph1d(polf - cosf));
 
 #endif
 	//test -------------------------------------------------------------

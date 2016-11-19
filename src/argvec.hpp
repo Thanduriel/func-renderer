@@ -1,5 +1,7 @@
 #pragma once
 
+#include "glm.hpp"
+
 namespace Math{
 
 	/* Vector with template specified dimension.
@@ -48,7 +50,7 @@ namespace Math{
 		ArgVec() {};
 		ArgVec(_ValT _x){ x = _x; };
 		ArgVec(_ValT _x, _ValT _y){ x = _x; y = _y; };
-		ArgVec(_ValT _x, _ValT _y, int _z){ x = _x; y = _y; z = _z; };
+		ArgVec(_ValT _x, _ValT _y, _ValT _z){ x = _x; y = _y; z = _z; };
 
 		// return value of _ind dimension
 		_ValT operator[](size_t _ind) const { return data[_ind]; }
@@ -63,7 +65,21 @@ namespace Math{
 
 			return sqrt(ret);
 		}
+
+		operator glm::vec2()
+		{
+			return glm::vec2(x, y);
+		}
 	};
+
+	template<typename _ValT, int _D>
+	auto operator*(float _lhs, ArgVec<_ValT, _D> _rhs)
+	{
+		for (int i = 0; i < _D; ++i)
+			_rhs[i] *= _lhs;
+
+		return _rhs;
+	}
 
 	//some common types
 	typedef ArgVec<float, 2> AVec2;

@@ -15,6 +15,10 @@ namespace Math{
 	typedef std::function<float(ArgVec<float, 2>)> Function2D;
 
 
+	//all used math functions should inherit from this type to make them identifiable in compile time
+	class Function
+	{};
+
 	// individual operations
 	template<typename _T, int _Dim>
 	class FunctionalScalar
@@ -215,7 +219,7 @@ namespace Math{
 	{
 		return FuncOp<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
 	}
-	template <typename _T>
+	template <typename _T, typename = std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator*(float _val, _T& _super)
 	{
 		return FuncOp<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
@@ -229,7 +233,7 @@ namespace Math{
 	 *	float interpolate(float _a, float _b, float _x)
 	 */
 	template< int _Dimensions, typename _ValueT, typename _Int>
-	class MemFunction : public _Int
+	class MemFunction : public _Int, public Function
 	{
 	public:
 		//argument type used to access stored values
@@ -348,7 +352,7 @@ namespace Math{
 
 
 	// ********************************************************************* //
-	//interpolation interface
+	// simpler interpolation interface for 1d functions
 
 	template<typename _Int>
 	class Interpolation1D : public _Int
@@ -362,4 +366,43 @@ namespace Math{
 
 	template<typename _Int>
 	using NoiseInt1D = FuncOp<ValueNoise<1, Interpolation1D<_Int>>>;
+
+	// ********************************************************************* //
+	// distance fields
+
+	template<int _D, int _NumPoints>
+	class DistanceFunction
+	{
+	public:
+		static constexpr int Dimensions = _D;
+
+		DistanceFunction()
+		{
+			Util::Random rng(0x529ef12c);
+			//generate some points
+			for (int i = 0; i < _NumPoints; ++i)
+			{
+				for (int j = 0; j < _D; ++j)
+					m_points[i][j] = rng.uniform(0.f, 40.f);
+			}
+		}
+
+		float operator()(ArgVec<float, _D> _arg)
+		{
+			float minDist = 999999.f;
+
+			for (auto& p : m_points)
+			{
+				float d = p.distance(_arg);
+				if (d < minDist) minDist = d;
+			}
+
+			return minDist;
+		}
+	private:
+		std::array< ArgVec<float, _D>, _NumPoints> m_points;
+	};
+
+	typedef FuncOp<DistanceFunction<2, 40>> DistanceFunction2D;
+
 }
