@@ -13,6 +13,7 @@ namespace Graphic{
 		const VertexBuffer<>& GetNormals() const { return m_normals; }
 		const VertexBuffer<uint32_t, GL_ELEMENT_ARRAY_BUFFER>& GetIndices() const { return m_indices; }
 
+		void translate(glm::vec3 _dir);
 		const glm::mat4& GetModelMatrix() const { return m_modelMatrix; }
 		uint32_t GetColor() const { return m_color; }
 

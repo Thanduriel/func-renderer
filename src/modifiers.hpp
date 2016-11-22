@@ -23,6 +23,8 @@ namespace Math {
 		}
 	};
 
+
+	// ********************************************************* //
 	class Clamp
 	{
 	public:
@@ -41,4 +43,28 @@ namespace Math {
 	};
 
 	typedef FuncOp<Modifier<Clamp>> ClampFunction;
+
+	// ********************************************************* //
+	class Absolute
+	{
+	public:
+		float filter(float _val)
+		{
+			return abs(_val);
+		}
+	};
+
+	typedef FuncOp<Modifier<Absolute>> AbsFunction;
+
+	// ********************************************************* //
+	class Inverse
+	{
+	public:
+		float filter(float _val)
+		{
+			return 1.f - _val;
+		}
+	};
+
+	typedef FuncOp<Modifier<Inverse>> InvFunction;
 }

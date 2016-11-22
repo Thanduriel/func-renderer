@@ -1,6 +1,6 @@
 #include "renderer3d.hpp"
 #include "config.hpp"
-#include <gl/glew.h>
+#include <GL/glew.h>
 
 #include "GLFW/glfw3.h"
 #include <gl/GL.h>
@@ -13,14 +13,14 @@
 namespace Graphic{
 
 	Renderer::Renderer():
-		m_camera(glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f,0.f,0.f), glm::radians(60.f)),
+		m_camera(c_cameraLocation, c_cameraOrigin, glm::radians(60.f)),
 		m_renderMode(RenderModes::Simple)
 	{
 		glEnable(GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
 		glDepthFunc(GL_LESS);
 
-		glEnable(GL_CULL_FACE);
+//		glEnable(GL_CULL_FACE);
 	}
 
 	// ********************************************************************* //

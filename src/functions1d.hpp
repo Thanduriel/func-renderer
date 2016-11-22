@@ -33,9 +33,13 @@ namespace Math{
 	typedef NoiseInt1D<CosInterpolation> CosIntFunction;
 
 
-	float blend(float _x)
+	float blend2(float _x)
 	{
 		return 3.f * _x*_x - 2.f * _x * _x * _x;
+	}
+	float blend(float x)
+	{
+		return x * x * x * (x * (x * 6 - 15.f) + 10.f);
 	}
 
 	class PolynomInterpolation

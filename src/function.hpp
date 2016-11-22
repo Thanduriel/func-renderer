@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <array>
+#include <queue>
 
 #include "glm.hpp"
 #include "random.hpp"
@@ -206,9 +207,9 @@ namespace Math{
 
 		//composition
 		template<typename _T2>
-		auto operator<(_T2& _oth)
+		auto operator[](_T2& _oth)
 		{
-			return FuncOp<FunctionalComposition<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalComposition<_Super, _T2, _T2::Dimensions>>(*this, _oth);
 		}
 
 	};
@@ -370,24 +371,36 @@ namespace Math{
 	// ********************************************************************* //
 	// distance fields
 
-	template<int _D, int _NumPoints>
-	class DistanceFunction
+	template<int _D, int _NumPoints, int _Min, int _Max>
+	class PointField
 	{
 	public:
 		static constexpr int Dimensions = _D;
-
-		DistanceFunction()
+		PointField()
 		{
 			Util::Random rng(0x529ef12c);
+			
+			int sqrtNum = (int)sqrt((float)_NumPoints);
+			float freq = (_Max - _Min) / (float)sqrtNum;
+
 			//generate some points
+			for(int ix = 0; ix < sqrtNum; ++ix)
+				for (int iy = 0; iy < sqrtNum; ++iy)
+				{
+					int ind = iy + sqrtNum * ix;
+					m_points[ind][0] = (float)_Min + freq * rng.uniform((float)ix - 0.3f, (float)ix + 0.3f);
+					m_points[ind][1] = (float)_Min + freq * rng.uniform((float)iy - 0.3f, (float)iy + 0.3f);
+					m_heights[ind] = rng.uniform(1.f, 10.f);
+				}
+	/*		float frame = sqrt((float)_NumPoints) / ((_Max - _Min)(_Max - _Min));
 			for (int i = 0; i < _NumPoints; ++i)
 			{
 				for (int j = 0; j < _D; ++j)
-					m_points[i][j] = rng.uniform(0.f, 40.f);
-			}
+					m_points[i][j] = rng.uniform((float)_Min, (float)_Max);
+			}*/
 		}
 
-		float operator()(ArgVec<float, _D> _arg)
+	/*	float operator()(ArgVec<float, _D> _arg)
 		{
 			float minDist = 999999.f;
 
@@ -398,11 +411,123 @@ namespace Math{
 			}
 
 			return minDist;
-		}
-	private:
+		}*/
+	protected:
 		std::array< ArgVec<float, _D>, _NumPoints> m_points;
+		std::array< float, _NumPoints> m_heights;
 	};
 
-	typedef FuncOp<DistanceFunction<2, 40>> DistanceFunction2D;
+
+	// ********************************************************************* //
+	struct Line
+	{
+		int begin;
+		int end;
+
+		float length;
+
+		// is only used for the priority queue
+		bool operator<(const Line& _rhs) const
+		{
+			return length > _rhs.length;
+		}
+	};
+
+	inline float distance(glm::vec2 p, glm::vec2 v, glm::vec2 w, float len)
+	{
+		// minimum distance between line segment vw and point p
+		float l2 = len * len;  // i.e. |w-v|^2 -  avoid a sqrt
+								  // Consider the line extending the segment, parameterized as v + t (w - v).
+								  // We find projection of point p onto the line. 
+								  // It falls where t = [(p-v) . (w-v)] / |w-v|^2
+								  // We clamp t from [0,1] to handle points outside the segment vw.
+		float t = std::max(0.f, std::min(1.f, dot(p - v, w - v) / l2));
+		glm::vec2 projection = v + t * (w - v);  // Projection falls on the segment
+
+		return glm::distance(projection, p);//((projection.y - p.y)*(projection.y - p.y) + (projection.x - p.x)*(projection.x - p.x));
+	}
+
+	inline float sqr(float x) { return x * x; }
+
+	// ********************************************************************* //
+	template<int _NumPoints = 36>
+	class MSTDistanceFunction : public PointField<2, _NumPoints, 20, 80>
+	{
+	public:
+		MSTDistanceFunction():
+			m_marks({true, false})
+		{
+			std::priority_queue<Line> queue;
+			
+			//add all connections of the first point
+			for (int i = 1; i < _NumPoints; ++i) {
+				Line l;
+				l.begin = 0;
+				l.end = i;
+				l.length = m_points[l.begin].distance(m_points[l.end]);
+				queue.push(l);
+			}
+
+			while (queue.size())
+			{
+				//take first element
+				const Line& l = queue.top();
+				
+				if (!m_marks[l.end]) //point has not been visited
+				{
+					//add to the tree
+					m_lines.push_back(l);
+					const Line& lnew = m_lines.back(); // l is invalidated by pushes to the queue
+					//mark point
+					m_marks[l.end] = true;
+
+					for (int i = 0; i < _NumPoints; ++i)
+					{
+						if (!m_marks[i])
+						{
+							Line next;
+							next.begin = lnew.end;
+							next.end = i;
+							next.length = m_points[next.begin].distance(m_points[next.end]);
+							queue.push(next);
+						}
+					}
+				}
+				queue.pop();
+			}
+		}
+
+/*		float operator()(ArgVec<float, 2> _arg)
+		{
+			float minDist = 999999.f;
+			for (auto& l : m_lines)
+			{
+				float d = distance(_arg, m_points[l.begin], m_points[l.end], l.length);
+				if (d < minDist) minDist = d;
+			}
+
+			return 15.f / (minDist * 0.15f+1.f);//std::max(10.f - minDist, 0.f);
+		}*/
+		float operator()(ArgVec<float, 2> _arg)
+		{
+			float height = 0;
+			float weightSum = 0;
+			for (int i = 0; i < (int)m_points.size(); ++i)
+			{
+				auto& p = m_points[i];
+				float distance = 2.0f/(1.0f + 2.0f*(sqr(p.y-_arg.y) + sqr(p.x-_arg.x)));	// Inverse quadric RBF
+			//	float distance = exp(-0.0006f*(sqr(p.y - _arg.y) + sqr(p.x - _arg.x)));		// Gaussian
+				height += distance * m_heights[i];
+				weightSum += distance;
+			}
+			return height / weightSum;
+		}
+
+	protected:
+		std::vector< Line > m_lines;
+		std::array< bool, _NumPoints > m_marks;
+	};
+
+	typedef FuncOp<MSTDistanceFunction<>> DistanceFunction2D;
 
 }

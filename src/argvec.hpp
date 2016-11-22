@@ -70,6 +70,11 @@ namespace Math{
 		{
 			return glm::vec2(x, y);
 		}
+
+		operator float()
+		{
+			return x;
+		}
 	};
 
 	template<typename _ValT, int _D>

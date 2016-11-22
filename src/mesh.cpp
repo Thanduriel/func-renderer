@@ -59,6 +59,11 @@ namespace Graphic{
 //		memcpy(&m_vertices[0], g_vertex_buffer_data, sizeof(g_vertex_buffer_data));
 	}
 
+	void Mesh::translate(glm::vec3 _dir)
+	{
+		glm::translate(m_modelMatrix, _dir);
+	}
+
 	void Mesh::updateNormals()
 	{
 		m_normals.resize(m_vertices.size());
