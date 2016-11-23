@@ -243,10 +243,10 @@ namespace Math{
 		static constexpr int Dimensions = _Dimensions;
 
 		MemFunction(int _size, float _freq = 1.f):
-			m_size(_size),
+			m_size(_size ? _size : ((int)((c_worldSize) * _freq)+2)), // requires at least 2 values in every dir
 			m_frequency(_freq)
 		{
-			m_values.resize((int)pow(_size, _Dimensions));
+			m_values.resize((int)pow(m_size, _Dimensions));
 		}
 
 		// value of this function is acquired by interpolation.
@@ -319,8 +319,8 @@ namespace Math{
 	class ValueNoise : public MemFunction<_Dimensions, float, _Int>
 	{
 	public:
-		ValueNoise(int _size, float _min = -1.f, float _max = 1.f, uint32_t _seed = 0x5FF3AC21)
-			: MemFunction(_size)
+		ValueNoise(int _size, float _freq = 1.f, float _min = -1.f, float _max = 1.f, uint32_t _seed = 0x5FF3AC21)
+			: MemFunction(_size, _freq)
 		{
 			Util::Random rng(_seed);
 			setAllStored([&](MemFunction<_Dimensions, float, _Int>::KeyType _arg)
@@ -338,7 +338,7 @@ namespace Math{
 	class GradientNoise : public MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>
 	{
 	public:
-		GradientNoise(int _size, float _freq = 1.f, uint32_t _seed = 0xB8EE2133)
+		GradientNoise(int _size = 0, float _freq = 1.f, uint32_t _seed = 0xB8EE2133)
 			: MemFunction(_size, _freq)
 		{
 			Util::Random rng(_seed);

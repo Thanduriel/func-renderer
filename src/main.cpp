@@ -64,6 +64,9 @@ int main(void)
 		scene.draw(window);
 	}
 
+	glDeleteVertexArrays(1, &VertexArrayID);
+
 	glfwTerminate();
+
 	return 0;
 }

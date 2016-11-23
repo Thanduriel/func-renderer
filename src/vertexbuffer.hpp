@@ -18,6 +18,10 @@ namespace Graphic{
 		//	glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		//	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 		}
+		~VertexBuffer()
+		{
+			glDeleteBuffers(1, &m_id);
+		}
 
 		bool isDirty() const { return m_isDirty; }
 

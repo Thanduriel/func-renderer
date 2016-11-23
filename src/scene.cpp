@@ -12,15 +12,15 @@ Scene::Scene(GLFWwindow* _window)
 	m_inputManager(*_window, m_renderer.GetCamera(), m_renderer)
 {
 #ifndef MODE2D
-	Math::CubicIntFunction2D base(1501, 0.02f, 0x12345);
-	Math::CubicIntFunction2D large(1000, 0.05f, 0x23456);
-	Math::CubicIntFunction2D medium(1000, 0.1f, 0x34567);
-	Math::CubicIntFunction2D small(1000, 0.2f, 0x45678);
-	Math::CubicIntFunction2D mini(1000, 0.4f);
-	Math::CubicIntFunction2D mini2(1000, 0.8f);
-	Math::CubicIntFunction2D mini3(1000, 1.6f);
-	Math::CubicIntFunction2D mini4(1000, 3.2f);
-	Math::LinearIntFunction linearf(1000);
+	Math::CubicIntFunction2D base(0, 0.02f, 0x12345);
+	Math::CubicIntFunction2D large(0, 0.05f, 0x23456);
+	Math::CubicIntFunction2D medium(0, 0.1f, 0x34567);
+	Math::CubicIntFunction2D small(0, 0.2f, 0x45678);
+	Math::CubicIntFunction2D mini(0, 0.4f);
+	Math::CubicIntFunction2D mini2(0, 0.8f);
+	Math::CubicIntFunction2D mini3(0, 1.6f);
+	Math::CubicIntFunction2D mini4(0, 3.2f);
+	Math::LinearIntFunction linearf(0);
 	Math::ClampFunction clamp(0.5f, 20.f);
 	//	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((16.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
 	Math::DistanceFunction2D distF;
@@ -29,7 +29,7 @@ Scene::Scene(GLFWwindow* _window)
 	Math::DistortFunction distortF;
 	Math::SqrFunction sqrF;
 	m_renderer.AddMesh(new Graphic::Graph2D(
-		distF[distortF] +
+	//	distF[distortF] +
 		invF[absF[base]] * 20.f
 		+ invF[absF[large]] * 10.f
 		+ (invF[absF[medium]] * 5.f

@@ -112,4 +112,9 @@ namespace Graphic{
 		return;
 	}
 
+
+	Effect::~Effect()
+	{
+		glDeleteProgram(m_id);
+	}
 }
