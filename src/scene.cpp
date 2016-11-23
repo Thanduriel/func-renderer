@@ -29,16 +29,16 @@ Scene::Scene(GLFWwindow* _window)
 	Math::DistortFunction distortF;
 	Math::SqrFunction sqrF;
 	m_renderer.addMesh(new Graphic::Graph2D(
-	//	distF[distortF] +
+		distF[distortF] +
 		invF[absF[base]] * 20.f
-		+ invF[absF[large]] * 10.f
+	//	+ invF[absF[large]] * 10.f
 		+ (invF[absF[medium]] * 5.f
 			+ invF[absF[small]] * 2.5f
 			+ invF[absF[mini]] * 1.25f
 			+ invF[absF[mini2]] * 0.75f
 			+ invF[absF[mini3]] * 0.35f
 			+ invF[absF[mini4]] * 0.12f) * sqrF[invF[absF[base]]]
-		+ -20.f, 0.1f, c_worldSize));
+		+ -40.f, 0.1f, c_worldSize));
 #else
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);

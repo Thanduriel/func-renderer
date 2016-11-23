@@ -433,33 +433,29 @@ namespace Math{
 		}
 	};
 
-	inline float distance(glm::vec2 p, glm::vec2 v, glm::vec2 w, float len)
+	inline float pointHeight(glm::vec2 p, glm::vec2 v, glm::vec2 w, float len, float ph, float vh)
 	{
 		// minimum distance between line segment vw and point p
-		float l2 = len * len;  // i.e. |w-v|^2 -  avoid a sqrt
-								  // Consider the line extending the segment, parameterized as v + t (w - v).
-								  // We find projection of point p onto the line. 
-								  // It falls where t = [(p-v) . (w-v)] / |w-v|^2
-								  // We clamp t from [0,1] to handle points outside the segment vw.
+		float l2 = len * len;  
 		float t = std::max(0.f, std::min(1.f, dot(p - v, w - v) / l2));
 		glm::vec2 projection = v + t * (w - v);  // Projection falls on the segment
 
-		return glm::distance(projection, p);//((projection.y - p.y)*(projection.y - p.y) + (projection.x - p.x)*(projection.x - p.x));
+		return /*(1-t) * ph + t * vh +*/ glm::distance(projection, p);//((projection.y - p.y)*(projection.y - p.y) + (projection.x - p.x)*(projection.x - p.x));
 	}
 
 	inline float sqr(float x) { return x * x; }
 
 	// ********************************************************************* //
-	template<int _NumPoints = 16>
-	class MSTDistanceFunction : public PointField<2, _NumPoints, 20, 80>
+	template<int _NumPoints = 25>
+	class MSTDistanceFunction : public PointField<2, _NumPoints, 0, 100>
 	{
 	public:
 		MSTDistanceFunction():
-			m_marks({true, false})
+			m_marks({true, false}) // first element is always marked as visited
 		{
 			std::priority_queue<Line> queue;
 			
-			//add all connections of the first point
+			//add all possible connections of the first point
 			for (int i = 1; i < _NumPoints; ++i) {
 				Line l;
 				l.begin = 0;
@@ -477,9 +473,10 @@ namespace Math{
 				{
 					//add to the tree
 					m_lines.push_back(l);
+					queue.pop();
 					const Line& lnew = m_lines.back(); // l is invalidated by pushes to the queue
 					//mark point
-					m_marks[l.end] = true;
+					m_marks[lnew.end] = true;
 
 					for (int i = 0; i < _NumPoints; ++i)
 					{
@@ -493,7 +490,7 @@ namespace Math{
 						}
 					}
 				}
-				queue.pop();
+				else queue.pop();
 			}
 		}
 
@@ -502,7 +499,7 @@ namespace Math{
 			float minDist = 999999.f;
 			for (auto& l : m_lines)
 			{
-				float d = distance(_arg, m_points[l.begin], m_points[l.end], l.length);
+				float d = pointHeight(_arg, m_points[l.begin], m_points[l.end], l.length, m_heights[l.begin], m_heights[l.end]);
 				if (d < minDist) minDist = d;
 			}
 
