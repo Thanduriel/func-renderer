@@ -33,7 +33,7 @@ namespace Graphic{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	void Renderer::AddMesh(Mesh* _mesh)
+	void Renderer::addMesh(Mesh* _mesh)
 	{
 		m_meshes.push_back(_mesh);
 		_mesh->updateNormals();
@@ -80,7 +80,7 @@ namespace Graphic{
 			const VertexBuffer<>& vb = mesh->GetVertices();
 
 			//set uniforms of the model
-			glm::mat4 mvp = m_camera.GetViewProjection() * mesh->GetModelMatrix();
+			glm::mat4 mvp = m_camera.getViewProjection() * mesh->GetModelMatrix();
 			glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 			glUniformMatrix4fv(mmID, 1, GL_FALSE, &mesh->GetModelMatrix()[0][0]);
 			uint32_t col = mesh->GetColor();

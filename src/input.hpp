@@ -10,7 +10,7 @@ namespace Input{
 	public:
 		InputManager(GLFWwindow& _window, Graphic::Camera& _camera, Graphic::Renderer& _renderer);
 
-		void Process(float _deltaTime);
+		void process(float _deltaTime);
 
 	private:
 		GLFWwindow& m_window;

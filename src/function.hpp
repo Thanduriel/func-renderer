@@ -250,7 +250,7 @@ namespace Math{
 		}
 
 		// value of this function is acquired by interpolation.
-		float operator()(ArgVec<float, _Dimensions> _arg)
+		float operator()(ArgVec<float, _Dimensions> _arg) /*const*/
 		{
 			for (int i = 0; i < Dimensions; ++i)
 				_arg[i] *= m_frequency;
@@ -281,7 +281,7 @@ namespace Math{
 
 	protected:
 		// Calculates the index at which the element can be found in m_values.
-		int getIndex(KeyType _arg)
+		int getIndex(KeyType _arg) const
 		{
 			int ind = _arg[0];
 			int size = m_size;
@@ -295,7 +295,7 @@ namespace Math{
 		}
 
 		// Return value stored at _arg.
-		_ValueT getStored(KeyType _arg)
+		_ValueT getStored(KeyType _arg) const
 		{
 			return m_values[getIndex(_arg)];
 		}
@@ -359,7 +359,7 @@ namespace Math{
 	class Interpolation1D : public _Int
 	{
 	public:
-		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances)
+		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances) const
 		{
 			return _Int::interpolate(_values[0], _values[1], _distances[0]);
 		}

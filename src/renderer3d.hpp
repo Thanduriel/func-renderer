@@ -18,9 +18,9 @@ namespace Graphic{
 
 		void draw(GLFWwindow* _window);
 
-		void AddMesh(Mesh* _mesh);
+		void addMesh(Mesh* _mesh);
 
-		Camera& GetCamera() { return m_camera; }
+		Camera& getCamera() { return m_camera; }
 
 		void setRenderMode(RenderModes _mode);
 	private:

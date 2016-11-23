@@ -9,7 +9,7 @@
 
 Scene::Scene(GLFWwindow* _window)
 	: m_renderer(),
-	m_inputManager(*_window, m_renderer.GetCamera(), m_renderer)
+	m_inputManager(*_window, m_renderer.getCamera(), m_renderer)
 {
 #ifndef MODE2D
 	Math::CubicIntFunction2D base(0, 0.02f, 0x12345);
@@ -22,13 +22,13 @@ Scene::Scene(GLFWwindow* _window)
 	Math::CubicIntFunction2D mini4(0, 3.2f);
 	Math::LinearIntFunction linearf(0);
 	Math::ClampFunction clamp(0.5f, 20.f);
-	//	renderer.AddMesh(new Graphic::Graph2D(/*clamp<*/((16.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
+	//	renderer.addMesh(new Graphic::Graph2D(/*clamp<*/((16.f * base + medium * 4.3f + small * 0.5f) * (base * 2.f + 0.4f)), 0.1f, 100.f));
 	Math::DistanceFunction2D distF;
 	Math::AbsFunction absF;
 	Math::InvFunction invF;
 	Math::DistortFunction distortF;
 	Math::SqrFunction sqrF;
-	m_renderer.AddMesh(new Graphic::Graph2D(
+	m_renderer.addMesh(new Graphic::Graph2D(
 	//	distF[distortF] +
 		invF[absF[base]] * 20.f
 		+ invF[absF[large]] * 10.f
@@ -43,10 +43,10 @@ Scene::Scene(GLFWwindow* _window)
 	Math::LinearIntFunction linearf(20);
 	Math::CosIntFunction cosf(20);
 	Math::PolynomIntFunction polf(20);
-	//	renderer.AddMesh(new Graphic::Graph1d(linearf));
-	//	renderer.AddMesh(new Graphic::Graph1d(cosf, 0.1f, 10.f, 0xFF0000FF));
-	//	renderer.AddMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
-	renderer.AddMesh(new Graphic::Graph1d(polf - cosf));
+	//	renderer.addMesh(new Graphic::Graph1d(linearf));
+	//	renderer.addMesh(new Graphic::Graph1d(cosf, 0.1f, 10.f, 0xFF0000FF));
+	//	renderer.addMesh(new Graphic::Graph1d(cosf + linearf * 0.5f + (-0.5f), 0.1f, 10.f, 0x00FFFFFF));
+	renderer.addMesh(new Graphic::Graph1d(polf - cosf));
 
 #endif
 }
@@ -54,7 +54,7 @@ Scene::Scene(GLFWwindow* _window)
 
 void Scene::process(float _dTime)
 {
-	m_inputManager.Process(_dTime);
+	m_inputManager.process(_dTime);
 }
 
 void Scene::draw(GLFWwindow* _window)

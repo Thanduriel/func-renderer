@@ -9,14 +9,14 @@ namespace Graphic{
 	public:
 		Camera(glm::vec3 _position, glm::vec3 _origin, float _fov);
 
-		const glm::mat4& GetViewProjection() const { return m_viewProjectionMatrix; }
+		const glm::mat4& getViewProjection() const { return m_viewProjectionMatrix; }
 
 		void update(float _dx, float _dy, glm::vec2 _off);
 
 		// Sets back this camera to the initial state.
 		void reset();
 	private:
-		void UpdateMatrix();
+		void updateMatrix();
 
 		float m_rotateX, m_rotateY;
 		glm::vec3 m_position, m_direction;

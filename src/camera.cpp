@@ -14,7 +14,7 @@ namespace Graphic{
 		m_initialPosition(_position),
 		m_initialOrigin(_origin)
 	{
-		UpdateMatrix();
+		updateMatrix();
 	}
 
 	void Camera::update(float _dx, float _dy, vec2 _off)
@@ -41,7 +41,7 @@ namespace Graphic{
 		m_position += m_direction * _off.x + right * _off.y;
 		m_viewMatrix = glm::lookAt(m_position, m_position + m_direction, up);
 
-		UpdateMatrix();
+		updateMatrix();
 	}
 
 
@@ -51,7 +51,7 @@ namespace Graphic{
 		m_direction = m_initialOrigin - m_initialPosition;
 	}
 
-	void Camera::UpdateMatrix()
+	void Camera::updateMatrix()
 	{
 		m_viewProjectionMatrix = m_projectionMatrix * m_viewMatrix;
 	}

@@ -12,7 +12,7 @@ namespace Input{
 		m_renderer(_renderer)
 	{}
 
-	void InputManager::Process(float _deltaTime)
+	void InputManager::process(float _deltaTime)
 	{
 		double width_2 = Config::g_windowWidth / 2.0;
 		double height_2 = Config::g_windowHeight / 2.0;
