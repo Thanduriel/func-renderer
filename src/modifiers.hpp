@@ -1,6 +1,8 @@
 #pragma once
 
 #include "function.hpp"
+#include "functions1d.hpp"
+#include "functions2d.hpp"
 
 namespace Math {
 
@@ -67,4 +69,35 @@ namespace Math {
 	};
 
 	typedef FuncOp<Modifier<Inverse>> InvFunction;
+
+	// ********************************************************* //
+	class Square
+	{
+	public:
+		float filter(float _val)
+		{
+			return _val * _val;
+		}
+	};
+
+	typedef FuncOp<Modifier<Square>> SqrFunction;
+
+	// ********************************************************* //
+	class Distort
+	{
+	public:
+		static constexpr int Dimensions = 2;
+
+		auto operator()(ArgVec<float, 2> _val)
+		{
+			static glm::vec2 base(50.f, 50.f);
+			static CubicIntFunction2D f(1501, 0.1f, 0x12CC345);
+			float x = f(AVec2(_val.x, 0.f))*10.f;
+
+			float distance = sqrt((base.x - _val.x) * (base.x - _val.x) + (base.y - _val.y) * (base.y - _val.y) +1.f);
+			return ArgVec<float, 2>(_val.x + x, _val.y-x);
+		}
+	};
+
+	typedef FuncOp<Distort> DistortFunction;
 }

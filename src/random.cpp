@@ -26,8 +26,7 @@ namespace Util{
 	int32_t Random::uniform(int32_t _min, int32_t _max)
 	{
 		uint32_t interval = uint32_t(_max - _min + 1);
-		// Do not use integer maximum bounds!
-		assert(interval != 0, "Do not use integer maximum bounds!");
+		assert(interval != 0 && "Do not use integer maximum bounds!");
 
 		uint32_t value = Xorshift128();
 		return _min + value % interval;

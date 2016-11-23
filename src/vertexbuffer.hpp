@@ -3,7 +3,7 @@
 #include <vector>
 #include <GL/glew.h>
 #include "GLFW/glfw3.h"
-#include <gl/GL.h>
+#include <GL/GL.h>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 

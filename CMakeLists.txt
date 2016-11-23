@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.1)
 project (worldRenderer)
+set (CMAKE_CXX_STANDARD 14)
 
 file(GLOB worldRenderer_SRC
     "src/*.hpp"

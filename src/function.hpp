@@ -136,7 +136,7 @@ namespace Math{
 	template<typename _T1, typename _T2, int _Dim>
 	class FunctionalComposition
 	{
-		static_assert(_T1::Dimensions == 1, "The outer function must be one dimensional.");
+	//	static_assert(_T1::Dimensions == 1, "The outer function must be one dimensional.");
 	public:
 
 		static constexpr int Dimensions = _Dim;
@@ -319,10 +319,10 @@ namespace Math{
 	class ValueNoise : public MemFunction<_Dimensions, float, _Int>
 	{
 	public:
-		ValueNoise(int _size, float _min = -1.f, float _max = 1.f)
+		ValueNoise(int _size, float _min = -1.f, float _max = 1.f, uint32_t _seed = 0x5FF3AC21)
 			: MemFunction(_size)
 		{
-			Util::Random rng(0x1a23f);
+			Util::Random rng(_seed);
 			setAllStored([&](MemFunction<_Dimensions, float, _Int>::KeyType _arg)
 			{
 				return rng.uniform(_min, _max);
@@ -338,10 +338,10 @@ namespace Math{
 	class GradientNoise : public MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>
 	{
 	public:
-		GradientNoise(int _size, float _freq = 1.f)
+		GradientNoise(int _size, float _freq = 1.f, uint32_t _seed = 0xB8EE2133)
 			: MemFunction(_size, _freq)
 		{
-			Util::Random rng(0x1a2e3f);
+			Util::Random rng(_seed);
 			setAllStored([&](MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>::KeyType _arg)
 			{
 				return rng.vector();
@@ -450,7 +450,7 @@ namespace Math{
 	inline float sqr(float x) { return x * x; }
 
 	// ********************************************************************* //
-	template<int _NumPoints = 36>
+	template<int _NumPoints = 16>
 	class MSTDistanceFunction : public PointField<2, _NumPoints, 20, 80>
 	{
 	public:
@@ -497,7 +497,7 @@ namespace Math{
 			}
 		}
 
-/*		float operator()(ArgVec<float, 2> _arg)
+		float operator()(ArgVec<float, 2> _arg)
 		{
 			float minDist = 999999.f;
 			for (auto& l : m_lines)
@@ -507,8 +507,8 @@ namespace Math{
 			}
 
 			return 15.f / (minDist * 0.15f+1.f);//std::max(10.f - minDist, 0.f);
-		}*/
-		float operator()(ArgVec<float, 2> _arg)
+		}
+/*		float operator()(ArgVec<float, 2> _arg)
 		{
 			float height = 0;
 			float weightSum = 0;
@@ -521,7 +521,7 @@ namespace Math{
 				weightSum += distance;
 			}
 			return height / weightSum;
-		}
+		}*/
 
 	protected:
 		std::vector< Line > m_lines;
