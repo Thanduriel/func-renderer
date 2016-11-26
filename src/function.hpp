@@ -157,7 +157,7 @@ namespace Math{
 	};
 
 	// ********************************************************************* //
-	// This type gives the given _Super type algebraic operations.
+	// This type provides the given _Super type algebraic operations.
 	// The name of this class should be short to avoid warning C4503
 	// "decorated name length exceeded, name was truncated"
 	template< typename _Super >
@@ -215,7 +215,7 @@ namespace Math{
 	};
 
 	//operators for lhs float
-	template <typename _T>
+	template <typename _T, typename = std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator+(float _val, _T& _super)
 	{
 		return FuncOp<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
@@ -226,12 +226,16 @@ namespace Math{
 		return FuncOp<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
 	}
 
+	// ********************************************************** //
+	// noise functions
+	// ********************************************************** //
+
 	/* MemFunction *********************************************
 	 * Function that keeps discrete values in memory.
 	 * @param _Dimensions Data dimensions this function has.
 	 *	One corresponds to a function of the style f(x)=y.
 	 * @param _Int A type that implements:
-	 *	float interpolate(float _a, float _b, float _x)
+	 *	float interpolate(ArgVec<float, D>, ArgVec<float, D>)
 	 */
 	template< int _Dimensions, typename _ValueT, typename _Int>
 	class MemFunction : public _Int, public Function
@@ -242,6 +246,9 @@ namespace Math{
 
 		static constexpr int Dimensions = _Dimensions;
 
+		// When a _size of 0 is given an appropriate size is choosen
+		// based on the frequency and the global word size.
+		// If you plan to further distort the input coords use a larger size.
 		MemFunction(int _size, float _freq = 1.f):
 			m_size(_size ? _size : ((int)((c_worldSize) * _freq)+2)), // requires at least 2 values in every dir
 			m_frequency(_freq)
@@ -304,7 +311,17 @@ namespace Math{
 		void setAllStored(std::function<_ValueT(KeyType)> _init)
 		{
 			for (int i = 0; i < (int)m_values.size(); ++i)
-				m_values[i] = _init(i);
+			{
+				KeyType key;
+				int s = i;
+				for (int j = 0; j < Dimensions; ++j)
+				{
+					key[j] = s % m_size;
+					s /= m_size;
+				}
+
+				m_values[i] = _init(key);
+			}
 		}
 //	private:
 		std::vector <_ValueT> m_values;
@@ -359,7 +376,7 @@ namespace Math{
 	class Interpolation1D : public _Int
 	{
 	public:
-		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances) const
+		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances)
 		{
 			return _Int::interpolate(_values[0], _values[1], _distances[0]);
 		}
@@ -370,13 +387,20 @@ namespace Math{
 
 	// ********************************************************************* //
 	// distance fields
+	// ********************************************************************* //
 
+	/* PointField ********************************************************** // 
+	 * A set of points _NumPoints evenly distributed over [_Min,_Max][_Min, _Max].
+	 * To have them distributed in a full square use only quadratic numbers for _NumPoints.
+	 */
 	template<int _D, int _NumPoints, int _Min, int _Max>
 	class PointField
 	{
 	public:
 		static constexpr int Dimensions = _D;
-		PointField()
+		// generates points with the given seed in a grid.
+		// Every point variates from it's grid location by [-_MaxVariance,_MaxVariance].
+		PointField(uint32_t _seed = 0x529ef12c, float _MaxVariance = 0.3f)
 		{
 			Util::Random rng(0x529ef12c);
 			
@@ -400,22 +424,60 @@ namespace Math{
 			}*/
 		}
 
-	/*	float operator()(ArgVec<float, _D> _arg)
-		{
-			float minDist = 999999.f;
-
-			for (auto& p : m_points)
-			{
-				float d = p.distance(_arg);
-				if (d < minDist) minDist = d;
-			}
-
-			return minDist;
-		}*/
 	protected:
 		std::array< ArgVec<float, _D>, _NumPoints> m_points;
 		std::array< float, _NumPoints> m_heights;
 	};
+
+	// ********************************************************************* //
+
+	class WorleyNoise : public PointField< 2, 64, 0, 100>
+	{
+	public:
+		void calculate(AVec2 _arg)
+		{
+			//already calculated
+			if (m_lastPoint == _arg) return;
+
+			float minDist = 999999.f;
+
+			for (int i = 0; i < (int)m_distances.size(); ++i)
+			{
+				m_distances[i] = m_points[i].distance(_arg);
+			}
+			std::sort(m_distances.begin(), m_distances.end());
+		}
+
+		float operator[](int _x) const
+		{
+			return m_distances[_x];
+		}
+
+	private:
+		AVec2 m_lastPoint; // point to wich the distances where calculated
+		std::array<float, 64> m_distances;
+	};
+
+	struct WorleyNoiseRead : public Function
+	{
+	public:
+		static constexpr int Dimensions = 2;
+
+		WorleyNoiseRead(WorleyNoise& _noise, int _distNum)
+			: m_distNum(_distNum),
+			m_noise(_noise) {}
+
+		float operator()(AVec2 _arg)
+		{
+			m_noise.calculate(_arg);
+			return m_noise[m_distNum];
+		}
+	private:
+		int m_distNum;
+		WorleyNoise& m_noise;
+	};
+
+	typedef FuncOp<WorleyNoiseRead> WorleyNoiseFunction;
 
 
 	// ********************************************************************* //
@@ -446,8 +508,8 @@ namespace Math{
 	inline float sqr(float x) { return x * x; }
 
 	// ********************************************************************* //
-	template<int _NumPoints = 25>
-	class MSTDistanceFunction : public PointField<2, _NumPoints, 0, 100>
+	template<int _NumPoints = 25, int _Min = 0, int _Max = 100>
+	class MSTDistanceFunction : public PointField<2, _NumPoints, _Min, _Max>
 	{
 	public:
 		MSTDistanceFunction():
@@ -503,7 +565,8 @@ namespace Math{
 				if (d < minDist) minDist = d;
 			}
 
-			return 15.f / (minDist * 0.15f+1.f);//std::max(10.f - minDist, 0.f);
+			//return 15.f / (minDist * 0.15f+1.f);
+			return std::max(10.f - minDist, 0.f);
 		}
 /*		float operator()(ArgVec<float, 2> _arg)
 		{

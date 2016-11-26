@@ -46,10 +46,13 @@ namespace Math{
 	template<typename _ValT, int _D>
 	struct ArgVec : public Component<_ValT, _D>
 	{
-		//construct from the required amount of arguments
-		ArgVec() {};
-		ArgVec(_ValT _x){ x = _x; };
+		ArgVec() { };
+		//construct with one arg for every dimension
+		template<typename = std::enable_if< _D == 1 >::type>
+		ArgVec(_ValT _x) { x = _x; };
+		template<typename = std::enable_if< _D == 2 >::type>
 		ArgVec(_ValT _x, _ValT _y){ x = _x; y = _y; };
+		template<typename = std::enable_if< _D == 3 >::type>
 		ArgVec(_ValT _x, _ValT _y, _ValT _z){ x = _x; y = _y; z = _z; };
 
 		// return value of _ind dimension
