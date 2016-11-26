@@ -81,23 +81,4 @@ namespace Math {
 	};
 
 	typedef FuncOp<Modifier<Square>> SqrFunction;
-
-	// ********************************************************* //
-	class Distort
-	{
-	public:
-		static constexpr int Dimensions = 2;
-
-		auto operator()(ArgVec<float, 2> _val)
-		{
-			static glm::vec2 base(50.f, 50.f);
-			static CubicIntFunction2D f(1501, 0.1f, 0x12CC345);
-			float x = f(AVec2(_val.x, 0.f)) * 5.f;
-			float y = f(AVec2(0.f, _val.y)) * 5.f;
-			//float distance = sqrt((base.x - _val.x) * (base.x - _val.x) + (base.y - _val.y) * (base.y - _val.y) +1.f);
-			return ArgVec<float, 2>(_val.x + y, _val.y+x);
-		}
-	};
-
-	typedef FuncOp<Distort> DistortFunction;
 }
