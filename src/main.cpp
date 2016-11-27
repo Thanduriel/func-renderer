@@ -48,7 +48,7 @@ int main(void)
 	glBindVertexArray(VertexArrayID);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	Scene scene(window);
+	SceneMountains scene(window);
 
 	clock_t c = clock();
 
