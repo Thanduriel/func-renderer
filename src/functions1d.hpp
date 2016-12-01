@@ -9,7 +9,7 @@ namespace Math {
 		class LinearInterpolation
 		{
 		public:
-			float interpolate(float _a, float _b, float _x)
+			float interpolate(float _a, float _b, float _x) const
 			{
 				return _a * (1.f - _x) + _b * _x;
 			}
@@ -20,12 +20,12 @@ namespace Math {
 		// ***************************************************** //
 		class CosInterpolation
 		{
-			float cosBlend(float x)
+			static float cosBlend(float x)
 			{
 				return (1.f - cos(x * 3.1415f)) * 0.5f;
 			}
 		public:
-			float interpolate(float _a, float _b, float _x)
+			float interpolate(float _a, float _b, float _x) const
 			{
 			//	return (1.f - cosBlend(_x))* _a*_x + cosBlend(_x)*_b*(_x - 1.f);
 					_x = (1.f - cos(_x * 3.1415f)) * 0.5f;
@@ -50,7 +50,7 @@ namespace Math {
 		class PolynomInterpolation
 		{
 		public:
-			float interpolate(float _a, float _b, float _x)
+			float interpolate(float _a, float _b, float _x) const
 			{
 				float f_2 = _x * _x;
 

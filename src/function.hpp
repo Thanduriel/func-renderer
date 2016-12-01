@@ -4,10 +4,12 @@
 #include <functional>
 #include <array>
 #include <queue>
+#include <algorithm>
 
 #include "glm.hpp"
 #include "random.hpp"
 #include "argvec.hpp"
+#include "config.hpp"
 
 namespace Math{
 	
@@ -27,12 +29,12 @@ namespace Math{
 	public:
 		static constexpr int Dimensions = _Dim;
 
-		FunctionalScalar(_T& _func, float _scalar)
+		FunctionalScalar(const _T& _func, float _scalar)
 			: m_func(_func), m_scalar(_scalar)
 		{}
 
 	protected:
-		_T& m_func;
+		const _T& m_func;
 		float m_scalar;
 	};
 
@@ -40,11 +42,11 @@ namespace Math{
 	class FunctionalScalarAdd : public FunctionalScalar<_T, _Dim>
 	{
 	public:
-		using FunctionalScalar::FunctionalScalar;
+		using FunctionalScalar<_T, _Dim>::FunctionalScalar;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_scalar + m_func(_val);
+			return this->m_scalar + this->m_func(_val);
 		}
 	};
 
@@ -52,11 +54,11 @@ namespace Math{
 	class FunctionalScalarMul : public FunctionalScalar<_T, _Dim>
 	{
 	public:
-		using FunctionalScalar::FunctionalScalar;
+		using FunctionalScalar<_T, _Dim>::FunctionalScalar;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_scalar * m_func(_val);
+			return this->m_scalar * this->m_func(_val);
 		}
 	};
 
@@ -68,14 +70,14 @@ namespace Math{
 	public:
 		static constexpr int Dimensions = _Dim;
 
-		FunctionalBinOp(_T1& _func1, _T2& _func2)
+		FunctionalBinOp(const _T1& _func1, const _T2& _func2)
 			: m_func1(_func1), m_func2(_func2)
 		{
 		}
 
 	protected:
-		_T1& m_func1;
-		_T2& m_func2;
+		const _T1& m_func1;
+		const _T2& m_func2;
 
 	};
 
@@ -84,11 +86,11 @@ namespace Math{
 	class FunctionalAdd : public FunctionalBinOp < _T1, _T2, _Dim>
 	{
 	public:
-		using FunctionalBinOp::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_func1(_val) + m_func2(_val);
+			return this->m_func1(_val) + this->m_func2(_val);
 		}
 	};
 
@@ -97,11 +99,11 @@ namespace Math{
 	class FunctionalSub : public FunctionalBinOp < _T1, _T2, _Dim>
 	{
 	public:
-		using FunctionalBinOp::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_func1(_val) - m_func2(_val);
+			return this->m_func1(_val) - this->m_func2(_val);
 		}
 	};
 
@@ -110,11 +112,11 @@ namespace Math{
 	class FunctionalMul : public FunctionalBinOp < _T1, _T2, _Dim>
 	{
 	public:
-		using FunctionalBinOp::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_func1(_val) * m_func2(_val);
+			return this->m_func1(_val) * this->m_func2(_val);
 		}
 	};
 
@@ -124,11 +126,11 @@ namespace Math{
 	{
 
 	public:
-		using FunctionalBinOp::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val)
+		float operator()(ArgVec<float, _Dim> _val) const
 		{
-			return m_func1(_val) / m_func2(_val);
+			return this->m_func1(_val) / this->m_func2(_val);
 		}
 	};
 
@@ -141,19 +143,19 @@ namespace Math{
 
 		static constexpr int Dimensions = _Dim;
 
-		FunctionalComposition(_T1& _func1, _T2& _func2)
+		FunctionalComposition(const _T1& _func1, const _T2& _func2)
 			: m_func1(_func1), m_func2(_func2)
 		{
 		}
 
-		float operator()(ArgVec<float, _T2::Dimensions> _val)
+		float operator()(ArgVec<float, _T2::Dimensions> _val) const
 		{
 			return m_func1(m_func2(_val));
 		}
 
 	private:
-		_T1& m_func1;
-		_T2& m_func2;
+		const _T1& m_func1;
+		const _T2& m_func2;
 	};
 
 	// ********************************************************************* //
@@ -170,44 +172,44 @@ namespace Math{
 		{}
 
 		//scalars
-		auto operator+(float _val)
+		auto operator+(float _val) const
 		{
 			return FuncOp<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
-		auto operator*(float _val)
+		auto operator*(float _val) const
 		{
 			return FuncOp<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
 		}
 
 		//binary operations
 		template<typename _T2>
-		auto operator+(_T2& _oth)
+		auto operator+(const _T2& _oth) const
 		{
 			return FuncOp<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
-		auto operator-(_T2& _oth)
+		auto operator-(const _T2& _oth) const
 		{
 			return FuncOp<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
-		auto operator*(_T2& _oth)
+		auto operator*(const _T2& _oth) const
 		{
 			return FuncOp<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		template<typename _T2>
-		auto operator/(_T2& _oth)
+		auto operator/(const _T2& _oth) const
 		{
 			return FuncOp<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
 		}
 
 		//composition
 		template<typename _T2>
-		auto operator[](_T2& _oth)
+		auto operator[](const _T2& _oth) const
 		{
 			return FuncOp<FunctionalComposition<_Super, _T2, _T2::Dimensions>>(*this, _oth);
 		}
@@ -215,13 +217,13 @@ namespace Math{
 	};
 
 	//operators for lhs float
-	template <typename _T, typename = std::enable_if< std::is_base_of<Function, _T>::value >::type>
-	static auto operator+(float _val, _T& _super)
+	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
+	static auto operator+(float _val, const _T& _super)
 	{
 		return FuncOp<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
 	}
-	template <typename _T, typename = std::enable_if< std::is_base_of<Function, _T>::value >::type>
-	static auto operator*(float _val, _T& _super)
+	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
+	static auto operator*(float _val, const _T& _super)
 	{
 		return FuncOp<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
 	}
@@ -257,7 +259,7 @@ namespace Math{
 		}
 
 		// value of this function is acquired by interpolation.
-		float operator()(ArgVec<float, _Dimensions> _arg) /*const*/
+		float operator()(ArgVec<float, _Dimensions> _arg) const
 		{
 			for (int i = 0; i < Dimensions; ++i)
 				_arg[i] *= m_frequency;
@@ -283,7 +285,7 @@ namespace Math{
 			for(int i = 0; i < Dimensions; ++i)
 				distances[i] = _arg[i] - edgePoints[0][i];
 
-			return interpolate(values, distances);
+			return _Int::interpolate(values, distances);
 		}
 
 	protected:
@@ -337,10 +339,10 @@ namespace Math{
 	{
 	public:
 		ValueNoise(int _size, float _freq = 1.f, float _min = -1.f, float _max = 1.f, uint32_t _seed = 0x5FF3AC21)
-			: MemFunction(_size, _freq)
+			: MemFunction<_Dimensions, float, _Int>(_size, _freq)
 		{
 			Util::Random rng(_seed);
-			setAllStored([&](MemFunction<_Dimensions, float, _Int>::KeyType _arg)
+			this->setAllStored([&](typename MemFunction<_Dimensions, float, _Int>::KeyType _arg)
 			{
 				return rng.uniform(_min, _max);
 			});
@@ -356,10 +358,10 @@ namespace Math{
 	{
 	public:
 		GradientNoise(int _size = 0, float _freq = 1.f, uint32_t _seed = 0xB8EE2133)
-			: MemFunction(_size, _freq)
+			: MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>(_size, _freq)
 		{
 			Util::Random rng(_seed);
-			setAllStored([&](MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>::KeyType _arg)
+			this->setAllStored([&](typename MemFunction<_Dimensions, ArgVec<float, _Dimensions>, _Int>::KeyType _arg)
 			{
 				return rng.vector();
 			});
@@ -376,7 +378,7 @@ namespace Math{
 	class Interpolation1D : public _Int
 	{
 	public:
-		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances)
+		float interpolate(ArgVec<float, 2> _values, ArgVec<float, 1> _distances) const
 		{
 			return _Int::interpolate(_values[0], _values[1], _distances[0]);
 		}
@@ -467,7 +469,7 @@ namespace Math{
 			: m_distNum(_distNum),
 			m_noise(_noise) {}
 
-		float operator()(AVec2 _arg)
+		float operator()(AVec2 _arg) const
 		{
 			m_noise.calculate(_arg);
 			return m_noise[m_distNum];
@@ -511,6 +513,7 @@ namespace Math{
 	template<int _NumPoints = 25, int _Min = 0, int _Max = 100>
 	class MSTDistanceFunction : public PointField<2, _NumPoints, _Min, _Max>
 	{
+		typedef PointField<2, _NumPoints, _Min, _Max> ST;
 	public:
 		MSTDistanceFunction():
 			m_marks({true, false}) // first element is always marked as visited
@@ -522,7 +525,7 @@ namespace Math{
 				Line l;
 				l.begin = 0;
 				l.end = i;
-				l.length = m_points[l.begin].distance(m_points[l.end]);
+				l.length = ST::m_points[l.begin].distance(ST::m_points[l.end]);
 				queue.push(l);
 			}
 
@@ -547,7 +550,7 @@ namespace Math{
 							Line next;
 							next.begin = lnew.end;
 							next.end = i;
-							next.length = m_points[next.begin].distance(m_points[next.end]);
+							next.length = ST::m_points[next.begin].distance(ST::m_points[next.end]);
 							queue.push(next);
 						}
 					}
@@ -556,12 +559,12 @@ namespace Math{
 			}
 		}
 
-		float operator()(ArgVec<float, 2> _arg)
+		float operator()(ArgVec<float, 2> _arg) const
 		{
 			float minDist = 999999.f;
 			for (auto& l : m_lines)
 			{
-				float d = pointHeight(_arg, m_points[l.begin], m_points[l.end], l.length, m_heights[l.begin], m_heights[l.end]);
+				float d = pointHeight(_arg, ST::m_points[l.begin].operator glm::vec2(), ST::m_points[l.end].operator glm::vec2(), l.length, ST::m_heights[l.begin], ST::m_heights[l.end]);
 				if (d < minDist) minDist = d;
 			}
 

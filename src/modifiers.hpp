@@ -19,9 +19,9 @@ namespace Math {
 		// _Mod constructor
 		using _Mod::_Mod;
 
-		float operator()(float _val)
+		float operator()(float _val) const
 		{
-			return filter(_val);
+			return _Mod::filter(_val);
 		}
 	};
 
@@ -34,7 +34,7 @@ namespace Math {
 			: m_lower(_lower), m_upper(_upper)
 		{}
 
-		float filter(float _val)
+		float filter(float _val) const
 		{
 			return glm::clamp(_val, m_lower, m_upper);
 		}
@@ -50,7 +50,7 @@ namespace Math {
 	class Absolute
 	{
 	public:
-		float filter(float _val)
+		float filter(float _val) const
 		{
 			return abs(_val);
 		}
@@ -62,7 +62,7 @@ namespace Math {
 	class Inverse
 	{
 	public:
-		float filter(float _val)
+		float filter(float _val) const
 		{
 			return 1.f - _val;
 		}
@@ -74,7 +74,7 @@ namespace Math {
 	class Square
 	{
 	public:
-		float filter(float _val)
+		float filter(float _val) const
 		{
 			return _val * _val;
 		}
@@ -88,7 +88,7 @@ namespace Math {
 	public:
 		static constexpr int Dimensions = 2;
 
-		auto operator()(ArgVec<float, 2> _val)
+		auto operator()(ArgVec<float, 2> _val) const
 		{
 			static glm::vec2 base(50.f, 50.f);
 			static PerlinNoise2D f(1501, 0.1f, 0x12CC345);

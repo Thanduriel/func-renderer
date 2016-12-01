@@ -46,37 +46,39 @@ namespace Math{
 	template<typename _ValT, int _D>
 	struct ArgVec : public Component<_ValT, _D>
 	{
+		typedef Component<_ValT, _D> ST;
+		
 		ArgVec() { };
 		//construct with one arg for every dimension
-		template<typename = std::enable_if< _D == 1 >::type>
-		ArgVec(_ValT _x) { x = _x; };
-		template<typename = std::enable_if< _D == 2 >::type>
-		ArgVec(_ValT _x, _ValT _y){ x = _x; y = _y; };
-		template<typename = std::enable_if< _D == 3 >::type>
-		ArgVec(_ValT _x, _ValT _y, _ValT _z){ x = _x; y = _y; z = _z; };
+		template<bool Enable = true, typename = typename std::enable_if< _D == 1 && Enable >::type>
+		ArgVec(_ValT _x) { ST::x = _x; };
+		template<bool Enable = true, typename = typename std::enable_if< _D == 2 && Enable >::type>
+		ArgVec(_ValT _x, _ValT _y){ ST::x = _x; ST::y = _y; };
+		template<bool Enable = true, typename = typename std::enable_if< _D == 3 && Enable >::type>
+		ArgVec(_ValT _x, _ValT _y, _ValT _z){ ST::x = _x; ST::y = _y; ST::z = _z; };
 
 		// return value of _ind dimension
-		_ValT operator[](size_t _ind) const { return data[_ind]; }
-		_ValT& operator[](size_t _ind) { return data[_ind]; }
+		_ValT operator[](size_t _ind) const { return ST::data[_ind]; }
+		_ValT& operator[](size_t _ind) { return ST::data[_ind]; }
 
 		template<typename _ValOther>
-		_ValT distance(const ArgVec<_ValOther, _D>& _oth)
+		_ValT distance(const ArgVec<_ValOther, _D>& _oth) const
 		{
 			_ValT ret = 0.f;
 			for(int i = 0; i < _D; ++i)
-				ret += (data[i] - (_ValT)_oth[i]) * (data[i] - (_ValT)_oth[i]);
+				ret += (ST::data[i] - (_ValT)_oth[i]) * (ST::data[i] - (_ValT)_oth[i]);
 
 			return sqrt(ret);
 		}
 
-		operator glm::vec2()
+		operator glm::vec2() const
 		{
-			return glm::vec2(x, y);
+			return glm::vec2(ST::x, ST::y);
 		}
 
 		operator float()
 		{
-			return x;
+			return ST::x;
 		}
 	};
 

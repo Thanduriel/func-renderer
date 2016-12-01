@@ -11,6 +11,7 @@ namespace Graphic{
 	template<typename _T = glm::vec3, unsigned int _ArrayType = GL_ARRAY_BUFFER>
 	class VertexBuffer : public std::vector<_T>
 	{
+		typedef std::vector<_T> ST;
 	public:
 		VertexBuffer() : m_isDirty(true)
 		{
@@ -31,7 +32,7 @@ namespace Graphic{
 		{
 			glBindBuffer(_ArrayType, m_id);
 			// Give our vertices to OpenGL.
-			glBufferData(_ArrayType, size() * sizeof(_T), &*begin(), GL_STATIC_DRAW);
+			glBufferData(_ArrayType, ST::size() * sizeof(_T), &*ST::begin(), GL_STATIC_DRAW);
 		}
 	private:
 		bool m_isDirty;
