@@ -7,22 +7,23 @@ file(GLOB worldRenderer_SRC
     "src/*.cpp"
 )
 
+add_executable(worldRenderer ${worldRenderer_SRC})
+
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
-add_subdirectory ("dependencies/glfw-3.2.1")
-include_directories("dependencies/glfw-3.2.1/include")
-
-add_subdirectory ("dependencies/glew-2.0.0/build/cmake")
-include_directories("dependencies/glew-2.0.0/include")
-
-include_directories("dependencies/glm/glm")
-
-add_executable(worldRenderer ${worldRenderer_SRC})
-
+add_subdirectory ("dependencies/glfw")
+include_directories("dependencies/glfw/include")
 target_link_libraries (worldRenderer glfw)
-target_link_libraries (worldRenderer glew)
+
+add_subdirectory ("dependencies/glew/build/cmake")
+include_directories("dependencies/glew/include")
+target_link_libraries (worldRenderer glew_s) # use static version
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(worldRenderer ${OPENGL_gl_LIBRARY})
+
+
+include_directories("dependencies/glm/glm")

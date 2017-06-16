@@ -22,13 +22,20 @@ namespace Math{
 	class Function
 	{};
 
-	// individual operations
-	template<typename _T, int _Dim>
-	class FunctionalScalar
+	// f: R^DimIn -> R^DimOut
+	template<int _DimIn, int _DimOout>
+	class FunctionStructure
 	{
 	public:
-		static constexpr int Dimensions = _Dim;
+		static int constexpr DimIn = _DimIn;
+		static int constexpr DimOut = _DimOout;
+	};
 
+	// individual operations
+	template<typename _T, int _Dim>
+	class FunctionalScalar : public FunctionStructure<_Dim,_Dim>
+	{
+	public:
 		FunctionalScalar(const _T& _func, float _scalar)
 			: m_func(_func), m_scalar(_scalar)
 		{}
@@ -64,12 +71,11 @@ namespace Math{
 
 	// ********************************************************************* //
 	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalBinOp
+	class FunctionalBinOp : public FunctionStructure<_Dim,_Dim>
 	{
-		static_assert(_T1::Dimensions == _T2::Dimensions, "Only functions with the same number of arguments can be added.");
+		static_assert(_T1::DimIn == _T2::DimIn
+			&& _T1::DimOut == _T2::DimOut, "Only functions with the same number of arguments can be combined.");
 	public:
-		static constexpr int Dimensions = _Dim;
-
 		FunctionalBinOp(const _T1& _func1, const _T2& _func2)
 			: m_func1(_func1), m_func2(_func2)
 		{
@@ -136,19 +142,18 @@ namespace Math{
 
 	// ********************************************************************* //
 	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalComposition
+	class FunctionalComposition : public FunctionStructure<_T2::DimIn, _T1::DimOut>
 	{
-	//	static_assert(_T1::Dimensions == 1, "The outer function must be one dimensional.");
+		static_assert(_T2::DimOut == _T1::DimIn, 
+			"The Output of the inner function must be of the same dimension as the input of the outer function.");
 	public:
-
-		static constexpr int Dimensions = _Dim;
 
 		FunctionalComposition(const _T1& _func1, const _T2& _func2)
 			: m_func1(_func1), m_func2(_func2)
 		{
 		}
 
-		float operator()(ArgVec<float, _T2::Dimensions> _val) const
+		float operator()(ArgVec<float, _T2::DimIn> _val) const
 		{
 			return m_func1(m_func2(_val));
 		}
@@ -166,52 +171,49 @@ namespace Math{
 	class FuncOp : public _Super
 	{
 	public:
-		template<typename... _Args>
-		FuncOp(_Args&&... _args)
-			: _Super(std::forward< _Args >(_args)...)
-		{}
+		using _Super::_Super;
 
 		//scalars
 		auto operator+(float _val) const
 		{
-			return FuncOp<FunctionalScalarAdd<_Super, _Super::Dimensions>>(*this, _val);
+			return FuncOp<FunctionalScalarAdd<_Super, _Super::DimIn>>(*this, _val);
 		}
 
 		auto operator*(float _val) const
 		{
-			return FuncOp<FunctionalScalarMul<_Super, _Super::Dimensions>>(*this, _val);
+			return FuncOp<FunctionalScalarMul<_Super, _Super::DimIn>>(*this, _val);
 		}
 
 		//binary operations
 		template<typename _T2>
 		auto operator+(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalAdd<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalAdd<_Super, _T2, _Super::DimIn>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator-(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalSub<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalSub<_Super, _T2, _Super::DimIn>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator*(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalMul<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalMul<_Super, _T2, _Super::DimIn>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator/(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalDiv<_Super, _T2, _Super::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalDiv<_Super, _T2, _Super::DimIn>>(*this, _oth);
 		}
 
 		//composition
 		template<typename _T2>
 		auto operator[](const _T2& _oth) const
 		{
-			return FuncOp<FunctionalComposition<_Super, _T2, _T2::Dimensions>>(*this, _oth);
+			return FuncOp<FunctionalComposition<_Super, _T2, _T2::DimIn>>(*this, _oth);
 		}
 
 	};
@@ -220,12 +222,12 @@ namespace Math{
 	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator+(float _val, const _T& _super)
 	{
-		return FuncOp<FunctionalScalarAdd<_T, _T::Dimensions>>(_super, _val);
+		return FuncOp<FunctionalScalarAdd<_T, _T::DimIn>>(_super, _val);
 	}
 	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator*(float _val, const _T& _super)
 	{
-		return FuncOp<FunctionalScalarMul<_T, _T::Dimensions>>(_super, _val);
+		return FuncOp<FunctionalScalarMul<_T, _T::DimIn>>(_super, _val);
 	}
 
 	// ********************************************************** //
@@ -240,13 +242,11 @@ namespace Math{
 	 *	float interpolate(ArgVec<float, D>, ArgVec<float, D>)
 	 */
 	template< int _Dimensions, typename _ValueT, typename _Int>
-	class MemFunction : public _Int, public Function
+	class MemFunction : public _Int, public Function, public FunctionStructure<_Dimensions, 1>
 	{
 	public:
 		//argument type used to access stored values
 		typedef ArgVec<int, _Dimensions> KeyType;
-
-		static constexpr int Dimensions = _Dimensions;
 
 		// When a _size of 0 is given an appropriate size is choosen
 		// based on the frequency and the global word size.
@@ -261,28 +261,28 @@ namespace Math{
 		// value of this function is acquired by interpolation.
 		float operator()(ArgVec<float, _Dimensions> _arg) const
 		{
-			for (int i = 0; i < Dimensions; ++i)
+			for (int i = 0; i < DimIn; ++i)
 				_arg[i] *= m_frequency;
-			std::array<KeyType, 1 << Dimensions> edgePoints;
-			ArgVec<_ValueT, 1 << Dimensions> values;
-			ArgVec<float, Dimensions> distances;
+			std::array<KeyType, 1 << DimIn> edgePoints;
+			ArgVec<_ValueT, 1 << DimIn> values;
+			ArgVec<float, DimIn> distances;
 
-			int border[Dimensions * 2];
-			for (int i = 0; i < Dimensions; ++i)
+			int border[DimIn * 2];
+			for (int i = 0; i < DimIn; ++i)
 			{
 				int i2 = i * 2;
 				border[i2] = (int)floor(_arg[i]);
 				border[i2+1] = (int)ceil(_arg[i]);
 			}
-			for (int i = 0; i < 1 << Dimensions; ++i)
+			for (int i = 0; i < 1 << DimIn; ++i)
 			{
-				for (int j = 0; j < Dimensions; ++j)
+				for (int j = 0; j < DimIn; ++j)
 					edgePoints[i][j] = border[2 * j + (1 & (i >> j))];
 			//	float f = _arg[0] - lower;
 
 				values[i] = getStored(edgePoints[i]);
 			}
-			for(int i = 0; i < Dimensions; ++i)
+			for(int i = 0; i < DimIn; ++i)
 				distances[i] = _arg[i] - edgePoints[0][i];
 
 			return _Int::interpolate(values, distances);
@@ -316,7 +316,7 @@ namespace Math{
 			{
 				KeyType key;
 				int s = i;
-				for (int j = 0; j < Dimensions; ++j)
+				for (int j = 0; j < DimIn; ++j)
 				{
 					key[j] = s % m_size;
 					s /= m_size;
@@ -396,10 +396,9 @@ namespace Math{
 	 * To have them distributed in a full square use only quadratic numbers for _NumPoints.
 	 */
 	template<int _D, int _NumPoints, int _Min, int _Max>
-	class PointField
+	class PointField : public FunctionStructure<_D,_D>
 	{
 	public:
-		static constexpr int Dimensions = _D;
 		// generates points with the given seed in a grid.
 		// Every point variates from it's grid location by [-_MaxVariance,_MaxVariance].
 		PointField(uint32_t _seed = 0x529ef12c, float _MaxVariance = 0.3f)
@@ -460,10 +459,9 @@ namespace Math{
 		std::array<float, 64> m_distances;
 	};
 
-	struct WorleyNoiseRead : public Function
+	struct WorleyNoiseRead : public Function, public FunctionStructure<2,1>
 	{
 	public:
-		static constexpr int Dimensions = 2;
 
 		WorleyNoiseRead(WorleyNoise& _noise, int _distNum)
 			: m_distNum(_distNum),

@@ -12,7 +12,7 @@ out vec3 color;
 
 void main()
 {
-	float cosTheta = clamp( dot( normal_cameraspace, ulightDirection ), 0,1 );
+	float cosTheta = clamp( dot( normal_cameraspace, ulightDirection ), 0.2,1 );
 	float angle = clamp(dot(normal_cameraspace, vec4(0,1,0,0)), 0, 1);
 	
 	color = angle * texture( utextureSampler, positionWorldspace.xz ).rgb

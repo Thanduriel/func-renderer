@@ -11,11 +11,9 @@ namespace Math {
 	 */
 
 	template<typename _Mod>
-	class Modifier : public _Mod
+	class Modifier : public _Mod, public FunctionStructure<1,1>
 	{
 	public:
-		static constexpr int Dimensions = 1;
-
 		// _Mod constructor
 		using _Mod::_Mod;
 
@@ -83,11 +81,9 @@ namespace Math {
 	typedef FuncOp<Modifier<Square>> SqrFunction;
 
 	// ********************************************************* //
-	class Distort
+	class Distort : public FunctionStructure<2,2>
 	{
 	public:
-		static constexpr int Dimensions = 2;
-
 		auto operator()(ArgVec<float, 2> _val) const
 		{
 			static glm::vec2 base(50.f, 50.f);

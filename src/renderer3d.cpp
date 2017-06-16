@@ -39,9 +39,9 @@ namespace Graphic{
 		_mesh->updateNormals();
 		_mesh->indexVBO();
 
-		_mesh->GetVertices().upload();
-		_mesh->GetNormals().upload();
-		_mesh->GetIndices().upload();
+		_mesh->GetVertices().upload(0);
+		_mesh->GetNormals().upload(1);
+		_mesh->GetIndices().upload(-1);
 	}
 
 	// ********************************************************************* //
@@ -51,8 +51,12 @@ namespace Graphic{
 		static Graphic::Effect effectSimple("shader/simple");
 		Effect& effect = m_renderMode == RenderModes::Simple ? effectSimple : effectTextured;
 
-		glClearColor(0.0f, 1.0f, 0.f, 1.0f);
+#ifndef MODE2D
+		glClearColor(0.5f, 0.807f, 0.922f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#else
+		glClearColor(0.0f, 1.0f, 0.f, 1.0f);
+#endif
 
 		glUseProgram(effect.getProgId());
 		glEnableVertexAttribArray(0);
@@ -96,27 +100,6 @@ namespace Graphic{
 			// Texture Unit 1
 			glUniform1i(textureSamp2, 1);
 
-			glBindBuffer(GL_ARRAY_BUFFER, vb.getId());
-			glVertexAttribPointer(
-				0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
-			);
-
-			glBindBuffer(GL_ARRAY_BUFFER, mesh->GetNormals().getId());
-			glVertexAttribPointer(
-				1,
-				3,                  // size
-				GL_FLOAT,           // type
-				GL_FALSE,           // normalized?
-				0,                  // stride
-				(void*)0            // array buffer offset
-			);
-
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->GetIndices().getId());
 			// Draw the triangles !
 			glDrawElements(
 				GL_TRIANGLES,      // mode

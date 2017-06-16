@@ -28,11 +28,23 @@ namespace Graphic{
 
 		int getId() const { return m_id; }
 
-		void upload() const
+		void upload(int _location = -1) const
 		{
 			glBindBuffer(_ArrayType, m_id);
 			// Give our vertices to OpenGL.
 			glBufferData(_ArrayType, ST::size() * sizeof(_T), &*ST::begin(), GL_STATIC_DRAW);
+
+			if (_location >= 0)
+			{
+				glVertexAttribPointer(
+					_location,          // layout in the shader.
+					3,                  // size
+					GL_FLOAT,           // type
+					GL_FALSE,           // normalized?
+					0,                  // stride
+					(void*)0            // array buffer offset
+				);
+			}
 		}
 	private:
 		bool m_isDirty;

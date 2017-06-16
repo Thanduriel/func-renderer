@@ -38,11 +38,11 @@ namespace Math {
 
 
 		// ***************************************************** //
-		float cubicBlend(float _x)
+		inline float cubicBlend(float _x)
 		{
 			return 3.f * _x*_x - 2.f * _x * _x * _x;
 		}
-		float blend(float x)
+		inline float blend(float x)
 		{
 			return x * x * x * (x * (x * 6 - 15.f) + 10.f);
 		}
