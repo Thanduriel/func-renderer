@@ -244,6 +244,7 @@ namespace Math{
 	template< int _Dimensions, typename _ValueT, typename _Int>
 	class MemFunction : public _Int, public Function, public FunctionStructure<_Dimensions, 1>
 	{
+		typedef FunctionStructure<_Dimensions, 1> Fn;
 	public:
 		//argument type used to access stored values
 		typedef ArgVec<int, _Dimensions> KeyType;
@@ -261,28 +262,28 @@ namespace Math{
 		// value of this function is acquired by interpolation.
 		float operator()(ArgVec<float, _Dimensions> _arg) const
 		{
-			for (int i = 0; i < DimIn; ++i)
+			for (int i = 0; i < Fn::DimIn; ++i)
 				_arg[i] *= m_frequency;
-			std::array<KeyType, 1 << DimIn> edgePoints;
-			ArgVec<_ValueT, 1 << DimIn> values;
-			ArgVec<float, DimIn> distances;
+			std::array<KeyType, 1 << Fn::DimIn> edgePoints;
+			ArgVec<_ValueT, 1 << Fn::DimIn> values;
+			ArgVec<float, Fn::DimIn> distances;
 
-			int border[DimIn * 2];
-			for (int i = 0; i < DimIn; ++i)
+			int border[Fn::DimIn * 2];
+			for (int i = 0; i < Fn::DimIn; ++i)
 			{
 				int i2 = i * 2;
 				border[i2] = (int)floor(_arg[i]);
 				border[i2+1] = (int)ceil(_arg[i]);
 			}
-			for (int i = 0; i < 1 << DimIn; ++i)
+			for (int i = 0; i < 1 << Fn::DimIn; ++i)
 			{
-				for (int j = 0; j < DimIn; ++j)
+				for (int j = 0; j < Fn::DimIn; ++j)
 					edgePoints[i][j] = border[2 * j + (1 & (i >> j))];
 			//	float f = _arg[0] - lower;
 
 				values[i] = getStored(edgePoints[i]);
 			}
-			for(int i = 0; i < DimIn; ++i)
+			for(int i = 0; i < Fn::DimIn; ++i)
 				distances[i] = _arg[i] - edgePoints[0][i];
 
 			return _Int::interpolate(values, distances);
@@ -316,7 +317,7 @@ namespace Math{
 			{
 				KeyType key;
 				int s = i;
-				for (int j = 0; j < DimIn; ++j)
+				for (int j = 0; j < Fn::DimIn; ++j)
 				{
 					key[j] = s % m_size;
 					s /= m_size;
