@@ -105,7 +105,8 @@ int main(void)
 	glBindVertexArray(VertexArrayID);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	SceneMountains scene(window);
+	MyScene2D scene(window);
+	scene.build();
 
 	clock_t c = clock();
 

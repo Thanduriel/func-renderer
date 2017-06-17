@@ -53,10 +53,10 @@ namespace Graphic{
 
 #ifndef MODE2D
 		glClearColor(0.5f, 0.807f, 0.922f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #else
 		glClearColor(0.0f, 1.0f, 0.f, 1.0f);
 #endif
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glUseProgram(effect.getProgId());
 		glEnableVertexAttribArray(0);

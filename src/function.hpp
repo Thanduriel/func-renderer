@@ -514,6 +514,7 @@ namespace Math{
 	{
 		typedef PointField<2, _NumPoints, _Min, _Max> ST;
 	public:
+		// Creates a minimum spanning tree on generated data.
 		MSTDistanceFunction():
 			m_marks({true, false}) // first element is always marked as visited
 		{

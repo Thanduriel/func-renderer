@@ -25,6 +25,8 @@ class Scene2D : public Scene
 {
 public:
 	Scene2D(GLFWwindow* _window);
+
+	void build() {}
 };
 
 
@@ -33,10 +35,32 @@ class SceneSimplePerlin : public Scene
 {
 public:
 	SceneSimplePerlin(GLFWwindow* _window);
+
+	void build() {}
 };
 
 class SceneMountains : public Scene
 {
 public:
 	SceneMountains(GLFWwindow* _window);
+
+	void build() {}
+};
+
+// ********************************************** //
+// custom scenes
+class MyScene2D : public Scene
+{
+public:
+	using Scene::Scene;
+
+	void build();
+};
+
+class MyScene3D : public Scene
+{
+public:
+	using Scene::Scene;
+
+	void build();
 };

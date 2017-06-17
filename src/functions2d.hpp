@@ -7,7 +7,7 @@ namespace Math {
 	class LinearInterpolation2D : public Func1D::LinearInterpolation
 	{
 	public:
-		float interpolate(ArgVec<float, 4> _values, ArgVec<float, 2> _distances) const
+		float interpolate(const ArgVec<float, 4>& _values, ArgVec<float, 2> _distances) const
 		{
 			assert(_distances.x >= 0.f && _distances.y <= 1.f);
 			float v0 = LinearInterpolation::interpolate(_values[0], _values[1], _distances.x);
@@ -22,7 +22,7 @@ namespace Math {
 	class CubicInterpolation2D : public Func1D::PolynomInterpolation
 	{
 	public:
-		float interpolate(ArgVec<AVec2, 4> _values, glm::vec2 _distances) const
+		float interpolate(const ArgVec<AVec2, 4>& _values, glm::vec2 _distances) const
 		{
 			using namespace glm;
 
