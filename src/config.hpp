@@ -2,7 +2,7 @@
 
 #include <glm.hpp>
 
-#define MODE2D
+//#define MODE2D
 
 #ifdef MODE2D
 const glm::vec3 c_cameraLocation = glm::vec3(0.f, 0.f, -2.f);

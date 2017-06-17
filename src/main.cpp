@@ -105,7 +105,7 @@ int main(void)
 	glBindVertexArray(VertexArrayID);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	MyScene2D scene(window);
+	MyScene3D scene(window);
 	scene.build();
 
 	clock_t c = clock();

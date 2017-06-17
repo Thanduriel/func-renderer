@@ -32,8 +32,8 @@ namespace Math{
 	};
 
 	// individual operations
-	template<typename _T, int _Dim>
-	class FunctionalScalar : public FunctionStructure<_Dim,_Dim>
+	template<typename _T>
+	class FunctionalScalar : public FunctionStructure<_T::DimIn,_T::DimOut>
 	{
 	public:
 		FunctionalScalar(const _T& _func, float _scalar)
@@ -45,33 +45,33 @@ namespace Math{
 		float m_scalar;
 	};
 
-	template<typename _T, int _Dim>
-	class FunctionalScalarAdd : public FunctionalScalar<_T, _Dim>
+	template<typename _T>
+	class FunctionalScalarAdd : public FunctionalScalar<_T>
 	{
 	public:
-		using FunctionalScalar<_T, _Dim>::FunctionalScalar;
+		using FunctionalScalar<_T>::FunctionalScalar;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_scalar + this->m_func(_val);
 		}
 	};
 
-	template<typename _T, int _Dim>
-	class FunctionalScalarMul : public FunctionalScalar<_T, _Dim>
+	template<typename _T>
+	class FunctionalScalarMul : public FunctionalScalar<_T>
 	{
 	public:
-		using FunctionalScalar<_T, _Dim>::FunctionalScalar;
+		using FunctionalScalar<_T>::FunctionalScalar;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_scalar * this->m_func(_val);
 		}
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalBinOp : public FunctionStructure<_Dim,_Dim>
+	template<typename _T1, typename _T2>
+	class FunctionalBinOp : public FunctionStructure<_T1::DimIn,_T1::DimOut>
 	{
 		static_assert(_T1::DimIn == _T2::DimIn
 			&& _T1::DimOut == _T2::DimOut, "Only functions with the same number of arguments can be combined.");
@@ -88,60 +88,60 @@ namespace Math{
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalAdd : public FunctionalBinOp < _T1, _T2, _Dim>
+	template<typename _T1, typename _T2>
+	class FunctionalAdd : public FunctionalBinOp < _T1, _T2>
 	{
 	public:
-		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_func1(_val) + this->m_func2(_val);
 		}
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalSub : public FunctionalBinOp < _T1, _T2, _Dim>
+	template<typename _T1, typename _T2>
+	class FunctionalSub : public FunctionalBinOp < _T1, _T2>
 	{
 	public:
-		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_func1(_val) - this->m_func2(_val);
 		}
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalMul : public FunctionalBinOp < _T1, _T2, _Dim>
+	template<typename _T1, typename _T2>
+	class FunctionalMul : public FunctionalBinOp < _T1, _T2>
 	{
 	public:
-		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_func1(_val) * this->m_func2(_val);
 		}
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
-	class FunctionalDiv : public FunctionalBinOp < _T1, _T2, _Dim>
+	template<typename _T1, typename _T2>
+	class FunctionalDiv : public FunctionalBinOp < _T1, _T2>
 	{
 
 	public:
-		using FunctionalBinOp < _T1, _T2, _Dim>::FunctionalBinOp;
+		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, _Dim> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return this->m_func1(_val) / this->m_func2(_val);
 		}
 	};
 
 	// ********************************************************************* //
-	template<typename _T1, typename _T2, int _Dim>
+	template<typename _T1, typename _T2>
 	class FunctionalComposition : public FunctionStructure<_T2::DimIn, _T1::DimOut>
 	{
 		static_assert(_T2::DimOut == _T1::DimIn, 
@@ -153,7 +153,7 @@ namespace Math{
 		{
 		}
 
-		float operator()(ArgVec<float, _T2::DimIn> _val) const
+		float operator()(ArgVec<float, DimIn> _val) const
 		{
 			return m_func1(m_func2(_val));
 		}
@@ -176,44 +176,44 @@ namespace Math{
 		//scalars
 		auto operator+(float _val) const
 		{
-			return FuncOp<FunctionalScalarAdd<_Super, _Super::DimIn>>(*this, _val);
+			return FuncOp<FunctionalScalarAdd<_Super>>(*this, _val);
 		}
 
 		auto operator*(float _val) const
 		{
-			return FuncOp<FunctionalScalarMul<_Super, _Super::DimIn>>(*this, _val);
+			return FuncOp<FunctionalScalarMul<_Super>>(*this, _val);
 		}
 
 		//binary operations
 		template<typename _T2>
 		auto operator+(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalAdd<_Super, _T2, _Super::DimIn>>(*this, _oth);
+			return FuncOp<FunctionalAdd<_Super, _T2>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator-(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalSub<_Super, _T2, _Super::DimIn>>(*this, _oth);
+			return FuncOp<FunctionalSub<_Super, _T2>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator*(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalMul<_Super, _T2, _Super::DimIn>>(*this, _oth);
+			return FuncOp<FunctionalMul<_Super, _T2>>(*this, _oth);
 		}
 
 		template<typename _T2>
 		auto operator/(const _T2& _oth) const
 		{
-			return FuncOp<FunctionalDiv<_Super, _T2, _Super::DimIn>>(*this, _oth);
+			return FuncOp<FunctionalDiv<_Super, _T2>>(*this, _oth);
 		}
 
 		//composition
 		template<typename _T2>
 		auto operator[](const _T2& _oth) const
 		{
-			return FuncOp<FunctionalComposition<_Super, _T2, _T2::DimIn>>(*this, _oth);
+			return FuncOp<FunctionalComposition<_Super, _T2>>(*this, _oth);
 		}
 
 	};
@@ -222,12 +222,12 @@ namespace Math{
 	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator+(float _val, const _T& _super)
 	{
-		return FuncOp<FunctionalScalarAdd<_T, _T::DimIn>>(_super, _val);
+		return FuncOp<FunctionalScalarAdd<_T>>(_super, _val);
 	}
 	template <typename _T, typename = typename std::enable_if< std::is_base_of<Function, _T>::value >::type>
 	static auto operator*(float _val, const _T& _super)
 	{
-		return FuncOp<FunctionalScalarMul<_T, _T::DimIn>>(_super, _val);
+		return FuncOp<FunctionalScalarMul<_T>>(_super, _val);
 	}
 
 	// ********************************************************** //
@@ -397,7 +397,7 @@ namespace Math{
 	 * To have them distributed in a full square use only quadratic numbers for _NumPoints.
 	 */
 	template<int _D, int _NumPoints, int _Min, int _Max>
-	class PointField : public FunctionStructure<_D,_D>
+	class PointField
 	{
 	public:
 		// generates points with the given seed in a grid.
@@ -510,7 +510,7 @@ namespace Math{
 
 	// ********************************************************************* //
 	template<int _NumPoints = 25, int _Min = 0, int _Max = 100>
-	class MSTDistanceFunction : public PointField<2, _NumPoints, _Min, _Max>
+	class MSTDistanceFunction : public PointField<2, _NumPoints, _Min, _Max>, public FunctionStructure<2,1>
 	{
 		typedef PointField<2, _NumPoints, _Min, _Max> ST;
 	public:

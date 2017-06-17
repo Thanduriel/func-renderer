@@ -59,5 +59,22 @@ namespace Math {
 		};
 
 		typedef NoiseInt1D<PolynomInterpolation> PerlinNoise1D;
+
+		// ***************************************************** //
+		class Dunes
+		{
+		public:
+			const float p = 1.f;
+			const float top = 0.72f;
+
+			float interpolate(float _a, float _b, float _x) const
+			{
+				float s = _x > top ? 1.f : 0.f;
+				float ps = p * s + 1.f;
+				return ps * 0.5f * (1.f - cos(3.1415f/ps * (_x-s)/(top - s)));
+			}
+		};
+
+		typedef NoiseInt1D<Dunes> Dunes1D;
 	}
 }
