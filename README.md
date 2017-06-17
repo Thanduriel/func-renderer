@@ -23,3 +23,6 @@ A detailed explananation on creating 1 to N-dimensional gradient noise functions
 * http://www.decarpentier.nl/scape-procedural-basics
 * http://www.decarpentier.nl/scape-procedural-extensions
 generating different terrains based on modified and combined perlin noise
+
+* http://www.planetside.co.uk/forums/index.php?action=dlattach;topic=18400.0;attach=50831
+creating dunes to form deserts
