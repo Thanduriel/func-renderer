@@ -14,7 +14,8 @@ namespace Graphic{
 
 	Renderer::Renderer():
 		m_camera(c_cameraLocation, c_cameraOrigin, glm::radians(60.f)),
-		m_renderMode(RenderModes::Simple)
+		m_renderMode(RenderModes::Simple),
+		m_previousMesh(nullptr)
 	{
 		glEnable(GL_DEPTH_TEST);
 		// Accept fragment if it closer to the camera than the former one
@@ -81,6 +82,14 @@ namespace Graphic{
 
 		for (auto& mesh : m_meshes)
 		{
+			if (m_previousMesh != mesh)
+			{
+				mesh->GetVertices().commit(0);
+				mesh->GetNormals().commit(1);
+				mesh->GetIndices().commit();
+				m_previousMesh = mesh;
+			}
+			
 			const VertexBuffer<>& vb = mesh->GetVertices();
 
 			//set uniforms of the model

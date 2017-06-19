@@ -28,12 +28,10 @@ namespace Graphic{
 
 		int getId() const { return m_id; }
 
-		void upload(int _location = -1) const
+		void commit(int _location = -1) const
 		{
 			glBindBuffer(_ArrayType, m_id);
-			// Give our vertices to OpenGL.
-			glBufferData(_ArrayType, ST::size() * sizeof(_T), &*ST::begin(), GL_STATIC_DRAW);
-
+			
 			if (_location >= 0)
 			{
 				glVertexAttribPointer(
@@ -45,6 +43,13 @@ namespace Graphic{
 					(void*)0            // array buffer offset
 				);
 			}
+		}
+
+		void upload(int _location = -1) const
+		{
+			glBindBuffer(_ArrayType, m_id);
+			// Give our vertices to OpenGL.
+			glBufferData(_ArrayType, ST::size() * sizeof(_T), &*ST::begin(), GL_STATIC_DRAW);
 		}
 	private:
 		bool m_isDirty;

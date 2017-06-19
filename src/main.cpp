@@ -105,7 +105,7 @@ int main(void)
 	glBindVertexArray(VertexArrayID);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	MyScene3D scene(window);
+	SceneSimplePerlin scene(window);
 	scene.build();
 
 	clock_t c = clock();

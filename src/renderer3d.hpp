@@ -28,5 +28,6 @@ namespace Graphic{
 		Camera m_camera;
 
 		std::vector<Mesh*> m_meshes;
+		Mesh* m_previousMesh;
 	};
 }
