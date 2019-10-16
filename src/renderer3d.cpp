@@ -34,15 +34,16 @@ namespace Graphic{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	void Renderer::addMesh(Mesh* _mesh)
+	void Renderer::addMesh(std::unique_ptr<Mesh> _mesh)
 	{
-		m_meshes.push_back(_mesh);
 		_mesh->updateNormals();
 		_mesh->indexVBO();
 
 		_mesh->GetVertices().upload(0);
 		_mesh->GetNormals().upload(1);
 		_mesh->GetIndices().upload(-1);
+
+		m_meshes.emplace_back(std::move(_mesh));
 	}
 
 	// ********************************************************************* //
@@ -82,12 +83,12 @@ namespace Graphic{
 
 		for (auto& mesh : m_meshes)
 		{
-			if (m_previousMesh != mesh)
+			if (m_previousMesh != mesh.get())
 			{
 				mesh->GetVertices().commit(0);
 				mesh->GetNormals().commit(1);
 				mesh->GetIndices().commit();
-				m_previousMesh = mesh;
+				m_previousMesh = mesh.get();
 			}
 			
 			const VertexBuffer<>& vb = mesh->GetVertices();
@@ -112,7 +113,7 @@ namespace Graphic{
 			// Draw the triangles !
 			glDrawElements(
 				GL_TRIANGLES,      // mode
-				mesh->GetIndices().size(),    // count
+				static_cast<GLsizei>(mesh->GetIndices().size()),    // count
 				GL_UNSIGNED_INT,   // type
 				(void*)0           // element array buffer offset
 			);

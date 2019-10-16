@@ -50,17 +50,13 @@ namespace Graphic{
 				m_vertices.emplace_back(ix, _func(AVec2(ix, iyr)), iyr);
 			}
 #else
-		size_t numVertices = 0;
-		// dummy run to calculate the exact number required
-		for (int ix = 0; ix < m_size; ix++)
-			for (int iy = 0; iy < m_size; iy++)
-				numVertices += 6;
+		const size_t numVertices = m_size * m_size * 6;
 
-		unsigned numThreads = std::min(c_maxNumThreads, std::thread::hardware_concurrency());
+		const unsigned numThreads = std::min(c_maxNumThreads, std::thread::hardware_concurrency());
 		m_vertices.resize(numVertices /*+ numThreads * 6*/);
 		// the intervalls only work well if this is the case
 	//	assert(m_vertices.size() % numThreads == 0);
-		float interval = numThreads * _res;
+		const float interval = numThreads * _res;
 
 		int indJump = numThreads * 6;
 		std::vector<std::thread> threads;

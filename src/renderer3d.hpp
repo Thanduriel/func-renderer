@@ -2,6 +2,7 @@
 
 #include "mesh.hpp"
 #include "camera.hpp"
+#include <memory>
 
 namespace Graphic{
 
@@ -18,7 +19,7 @@ namespace Graphic{
 
 		void draw(GLFWwindow* _window);
 
-		void addMesh(Mesh* _mesh);
+		void addMesh(std::unique_ptr<Mesh> _mesh);
 
 		Camera& getCamera() { return m_camera; }
 
@@ -27,7 +28,7 @@ namespace Graphic{
 		RenderModes m_renderMode;
 		Camera m_camera;
 
-		std::vector<Mesh*> m_meshes;
+		std::vector<std::unique_ptr<Mesh>> m_meshes;
 		Mesh* m_previousMesh;
 	};
 }

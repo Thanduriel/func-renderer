@@ -40,9 +40,9 @@ Scene2D::Scene2D(GLFWwindow* _window)
 	Func1D::LinearIntFunction linearf(0);
 	Func1D::CosIntFunction cosf(0);
 	Func1D::PerlinNoise1D polf(0);
-	m_renderer.addMesh(new Graphic::Graph1D(linearf + -0.5f));
-	m_renderer.addMesh(new Graphic::Graph1D(cosf, 0.1f, 10.f, 0xFF0000FF));
-	m_renderer.addMesh(new Graphic::Graph1D(polf + 0.5f, 0.1f, 10.f, 0xFFFFFFFF));
+	m_renderer.addMesh(std::make_unique<Graphic::Graph1D>(linearf + -0.5f));
+	m_renderer.addMesh(std::make_unique<Graphic::Graph1D>(cosf, 0.1f, 10.f, 0xFF0000FF));
+	m_renderer.addMesh(std::make_unique<Graphic::Graph1D>(polf + 0.5f, 0.1f, 10.f, 0xFFFFFFFF));
 }
 
 
@@ -54,7 +54,7 @@ SceneSimplePerlin::SceneSimplePerlin(GLFWwindow* _window)
 	Math::PerlinNoise2D medium(0, 0.1f, 0x34567);
 	Math::PerlinNoise2D small(0, 0.2f, 0x45678);
 
-	m_renderer.addMesh(new Graphic::Graph2D(
+	m_renderer.addMesh(std::make_unique<Graphic::Graph2D>(
 		base * 20.f
 		+ large * 10.f
 		+ medium * 5.f
@@ -81,7 +81,7 @@ SceneMountains::SceneMountains(GLFWwindow* _window)
 	Math::InvFunction invF;
 	Math::DistortFunction distortF;
 	Math::SqrFunction sqrF;
-	m_renderer.addMesh(new Graphic::Graph2D(
+	m_renderer.addMesh(std::make_unique<Graphic::Graph2D>(
 		distF[distortF]
 		+ invF[absF[base]] * 20.f
 		+ invF[absF[large]] * 10.f
