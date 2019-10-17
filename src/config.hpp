@@ -19,3 +19,6 @@ const float c_worldSize = 20.f;
 #else
 const float c_worldSize = 100.f;
 #endif
+
+constexpr const char* c_shaderPath = "../shader/";
+constexpr const char* c_texturePath = "../texture/";

@@ -7,15 +7,15 @@
 #include <algorithm>
 
 #include "glm.hpp"
-#include "random.hpp"
-#include "argvec.hpp"
+#include "utils/random.hpp"
+#include "utils/argvec.hpp"
 #include "config.hpp"
 
 namespace Math{
 	
 	// common used function signatures
-	typedef std::function<float(float)> Function1D;
-	typedef std::function<float(ArgVec<float, 2>)> Function2D;
+	using Function1D = std::function<float(float)>;
+	using Function2D = std::function<float(ArgVec<float, 2>)>;
 
 
 	//all used math functions should inherit from this type to make them identifiable in compile time
@@ -244,13 +244,13 @@ namespace Math{
 	template< int _Dimensions, typename _ValueT, typename _Int>
 	class MemFunction : public _Int, public Function, public FunctionStructure<_Dimensions, 1>
 	{
-		typedef FunctionStructure<_Dimensions, 1> Fn;
+		using Fn = FunctionStructure<_Dimensions, 1>;
 	public:
 		//argument type used to access stored values
-		typedef ArgVec<int, _Dimensions> KeyType;
+		using KeyType = ArgVec<int, _Dimensions>;
 
 		// When a _size of 0 is given an appropriate size is choosen
-		// based on the frequency and the global word size.
+		// based on the frequency and the global world size.
 		// If you plan to further distort the input coords use a larger size.
 		MemFunction(int _size, float _freq = 1.f):
 			m_size(_size ? _size : ((int)((c_worldSize) * _freq)+2)), // requires at least 2 values in every dir

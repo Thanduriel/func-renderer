@@ -8,15 +8,17 @@
 #include "GLFW/glfw3.h"
 
 #include "effect.hpp"
+#include "config.hpp"
 
 using namespace std;
 
 namespace Graphic{
 
-	Effect::Effect(const char * _name){
-
-		string vertexPath = _name + string(".vs");
-		string fragPath = _name + string(".ps");
+	Effect::Effect(const char * _name)
+		: m_id(0)
+	{
+		string vertexPath = c_shaderPath + string(_name) + ".vs";
+		string fragPath = c_shaderPath + string(_name) + ".ps";
 
 		// Create the shaders
 		GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
@@ -32,7 +34,7 @@ namespace Graphic{
 			VertexShaderStream.close();
 		}
 		else{
-			cout << "Could not open: ", vertexPath;
+			cout << "Could not open: " << vertexPath << std::endl;
 			getchar();
 			return;
 		}
@@ -52,7 +54,7 @@ namespace Graphic{
 
 
 		// Compile Vertex Shader
-		cout << "Compiling shader : " << vertexPath;
+		cout << "Compiling shader : " << vertexPath << "\n";
 		char const * VertexSourcePointer = VertexShaderCode.c_str();
 		glShaderSource(VertexShaderID, 1, &VertexSourcePointer, NULL);
 		glCompileShader(VertexShaderID);
@@ -69,7 +71,7 @@ namespace Graphic{
 
 
 		// Compile Fragment Shader
-		cout << "Compiling shader : " << fragPath;
+		cout << "Compiling shader : " << fragPath << "\n";
 		char const * FragmentSourcePointer = FragmentShaderCode.c_str();
 		glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer, NULL);
 		glCompileShader(FragmentShaderID);

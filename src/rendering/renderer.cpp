@@ -1,4 +1,4 @@
-#include "renderer3d.hpp"
+#include "renderer.hpp"
 #include "config.hpp"
 #include <GL/glew.h>
 
@@ -49,8 +49,8 @@ namespace Graphic{
 	// ********************************************************************* //
 	void Renderer::draw(GLFWwindow* _window)
 	{
-		static Graphic::Effect effectTextured("shader/textured");
-		static Graphic::Effect effectSimple("shader/simple");
+		static Graphic::Effect effectTextured("textured");
+		static Graphic::Effect effectSimple("simple");
 		Effect& effect = m_renderMode == RenderModes::Simple ? effectSimple : effectTextured;
 
 #ifndef MODE2D
@@ -73,8 +73,9 @@ namespace Graphic{
 		GLuint textureSamp = glGetUniformLocation(effect.getProgId(), "utextureSampler");
 		GLuint textureSamp2 = glGetUniformLocation(effect.getProgId(), "utextureSampler2");
 
-		static Texture texture("texture/grass.DDS");
-		static Texture textureRock("texture/rock.DDS");
+		using namespace std::string_literals;
+		static Texture texture(c_texturePath + "grass.DDS"s);
+		static Texture textureRock(c_texturePath + "rock.DDS"s);
 #ifndef MODE2D
 		glUniform4f(lightDir, 0.4472f, 0.8944f, 0.f, 0.f);
 #else

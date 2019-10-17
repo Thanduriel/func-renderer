@@ -2,7 +2,7 @@
 
 #include <atomic>
 
-#include "function.hpp"
+#include "functions/function.hpp"
 #include "mesh.hpp"
 
 namespace Graphic{

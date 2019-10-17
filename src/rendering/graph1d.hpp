@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mesh.hpp"
-#include "function.hpp"
+#include "functions/function.hpp"
 
 namespace Graphic{
 	class Graph1D : public Mesh

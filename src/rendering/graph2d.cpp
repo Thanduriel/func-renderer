@@ -33,7 +33,7 @@ namespace Graphic{
 		: m_size(int(_size * 1.f / _res)), m_resolution(_res), m_function(_func)
 	{
 		m_vertices.clear();
-		int scale = int(1.f / _res);
+		const int scale = int(1.f / _res);
 #ifndef MULTITHREADED
 		m_vertices.reserve((int)_size * (int)_size * scale * scale * 6);
 
@@ -50,12 +50,10 @@ namespace Graphic{
 				m_vertices.emplace_back(ix, _func(AVec2(ix, iyr)), iyr);
 			}
 #else
-		const size_t numVertices = m_size * m_size * 6;
+		const int numVertices = m_size * m_size * 6;
 
-		const unsigned numThreads = std::min(c_maxNumThreads, std::thread::hardware_concurrency());
-		m_vertices.resize(numVertices /*+ numThreads * 6*/);
-		// the intervalls only work well if this is the case
-	//	assert(m_vertices.size() % numThreads == 0);
+		const int numThreads = std::min(c_maxNumThreads, std::thread::hardware_concurrency());
+		m_vertices.resize(static_cast<size_t>(numVertices));
 		const float interval = numThreads * _res;
 
 		int indJump = numThreads * 6;
@@ -64,7 +62,7 @@ namespace Graphic{
 		{
 			threads.emplace_back(&Graph2D::buildSegment, this, i, numThreads, i * 6, indJump);
 		}
-
+		// work for the main thread
 		buildSegment(numThreads-1, numThreads, (numThreads-1) * 6, indJump);
 
 		for (auto& t : threads) t.join();

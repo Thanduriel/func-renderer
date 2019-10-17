@@ -8,13 +8,13 @@
 #include <GL/GL.h>
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
-
-#include "scene.hpp"
-#include "globals.hpp"
 #include <fstream>
-#include "functions1d.hpp"
-#include "functions2d.hpp"
-#include "modifiers.hpp"
+
+#include "scenes/scene.hpp"
+#include "globals.hpp"
+#include "functions/functions1d.hpp"
+#include "functions/functions2d.hpp"
+#include "functions/modifiers.hpp"
 
 int main(void)
 {
@@ -52,7 +52,9 @@ int main(void)
 	glBindVertexArray(VertexArrayID);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-	SceneSimplePerlin scene(window);
+//	SceneSimplePerlin scene(window);
+	MyScene3D scene(window);
+	scene.build();
 
 	clock_t c = clock();
 

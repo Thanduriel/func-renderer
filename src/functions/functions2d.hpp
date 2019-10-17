@@ -4,7 +4,7 @@
 #include "functions1d.hpp"
 
 namespace Math {
-	class LinearInterpolation2D : public Func1D::LinearInterpolation
+	class LinearInterpolation2D : Func1D::LinearInterpolation
 	{
 	public:
 		float interpolate(const ArgVec<float, 4>& _values, ArgVec<float, 2> _distances) const
@@ -19,7 +19,7 @@ namespace Math {
 
 	typedef FuncOp<ValueNoise<2, LinearInterpolation2D>> LinearIntFunction2D;
 
-	class CubicInterpolation2D : public Func1D::PolynomInterpolation
+	class CubicInterpolation2D : Func1D::PolynomInterpolation
 	{
 	public:
 		float interpolate(const ArgVec<AVec2, 4>& _values, glm::vec2 _distances) const

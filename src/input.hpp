@@ -1,7 +1,7 @@
 #pragma once
 
-#include "camera.hpp"
-#include "renderer3d.hpp"
+#include "rendering/camera.hpp"
+#include "rendering/renderer.hpp"
 #include "GLFW/glfw3.h"
 
 namespace Input{
