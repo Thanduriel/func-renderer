@@ -53,8 +53,9 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
 //	SceneSimplePerlin scene(window);
-	MyScene3D scene(window);
-	scene.build();
+//	Scene2D scene(window);
+	SceneMountains scene(window);
+//	scene.build();
 
 	clock_t c = clock();
 

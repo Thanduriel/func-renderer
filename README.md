@@ -1,13 +1,13 @@
 # func-renderer
 This is OpenGl 3.3 based renderer for noise functions to experiment with terrain generation.
-IT uses expression templates to compose different feature functions in compile time.
+It uses expression templates to compose multiple height functions in compile time.
 
 # build
 * clone repo
 * update submodules
 * Use the CMakeLists.txt in the main folder to generate platform depend build files
 * build with toolchain of your choice
-tested: msvc2017, gcc 6.1.0, gcc 7.1.0
+tested: msvc2019, gcc 8.1.0
 
 # usage
 A variaty of useful functions can be found in functions1d.hpp, functions2d.hpp and modifiers.hpp.

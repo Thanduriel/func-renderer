@@ -17,10 +17,8 @@ namespace Graphic{
 		const glm::mat4& GetModelMatrix() const { return m_modelMatrix; }
 		uint32_t GetColor() const { return m_color; }
 
-		//calculates the normals for the current vertices
+		//calculates the normals for the current triangles
 		void updateNormals();
-
-		void indexVBO();
 	protected:
 
 		glm::mat4 m_modelMatrix;

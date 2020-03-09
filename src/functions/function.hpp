@@ -29,6 +29,8 @@ namespace Math{
 	public:
 		static int constexpr DimIn = _DimIn;
 		static int constexpr DimOut = _DimOout;
+
+		using ArgVecIn = ArgVec<float, DimIn>;
 	};
 
 	// individual operations
@@ -51,7 +53,7 @@ namespace Math{
 	public:
 		using FunctionalScalar<_T>::FunctionalScalar;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalScalar<_T>::ArgVecIn& _val) const
 		{
 			return this->m_scalar + this->m_func(_val);
 		}
@@ -63,7 +65,7 @@ namespace Math{
 	public:
 		using FunctionalScalar<_T>::FunctionalScalar;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalScalar<_T>::ArgVecIn& _val) const
 		{
 			return this->m_scalar * this->m_func(_val);
 		}
@@ -94,7 +96,7 @@ namespace Math{
 	public:
 		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalBinOp < _T1, _T2>::ArgVecIn&  _val) const
 		{
 			return this->m_func1(_val) + this->m_func2(_val);
 		}
@@ -107,7 +109,7 @@ namespace Math{
 	public:
 		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalBinOp < _T1, _T2>::ArgVecIn& _val) const
 		{
 			return this->m_func1(_val) - this->m_func2(_val);
 		}
@@ -120,7 +122,7 @@ namespace Math{
 	public:
 		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalBinOp < _T1, _T2>::ArgVecIn& _val) const
 		{
 			return this->m_func1(_val) * this->m_func2(_val);
 		}
@@ -134,7 +136,7 @@ namespace Math{
 	public:
 		using FunctionalBinOp < _T1, _T2>::FunctionalBinOp;
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionalBinOp < _T1, _T2>::ArgVecIn& _val) const
 		{
 			return this->m_func1(_val) / this->m_func2(_val);
 		}
@@ -153,7 +155,7 @@ namespace Math{
 		{
 		}
 
-		float operator()(ArgVec<float, DimIn> _val) const
+		float operator()(const typename FunctionStructure<_T2::DimIn, _T1::DimOut>::ArgVecIn& _val) const
 		{
 			return m_func1(m_func2(_val));
 		}

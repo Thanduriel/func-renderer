@@ -37,7 +37,6 @@ namespace Graphic{
 	void Renderer::addMesh(std::unique_ptr<Mesh> _mesh)
 	{
 		_mesh->updateNormals();
-		_mesh->indexVBO();
 
 		_mesh->GetVertices().upload(0);
 		_mesh->GetNormals().upload(1);

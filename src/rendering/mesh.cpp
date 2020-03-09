@@ -19,16 +19,20 @@ namespace Graphic{
 	void Mesh::updateNormals()
 	{
 		m_normals.resize(m_vertices.size());
-		for (size_t i = 0; i < m_vertices.size(); i += 3)
+		for (size_t i = 0; i < m_indices.size(); i += 3)
 		{
-			vec3 edge1 = m_vertices[i+1] - m_vertices[i];
-			vec3 edge2 = m_vertices[i + 2] - m_vertices[i];
+			const uint32_t i0 = m_indices[i];
+			const uint32_t i1 = m_indices[i+1];
+			const uint32_t i2 = m_indices[i+2];
+			vec3 edge1 = m_vertices[i1] - m_vertices[i0];
+			vec3 edge2 = m_vertices[i2] - m_vertices[i0];
 			vec3 normal = normalize(cross(edge1, edge2));
-			m_normals[i] = normal;
-			m_normals[i+1] = normal;
-			m_normals[i+2] = normal;
-
+			m_normals[i0] += normal;
+			m_normals[i1] += normal;
+			m_normals[i2] += normal;
 		}
+
+		for (vec3& n : m_normals) n = glm::normalize(n);
 	}
 
 	struct KeyFuncs
@@ -44,40 +48,4 @@ namespace Graphic{
 			return _a == _b;
 		}
 	};
-
-	void Mesh::indexVBO()
-	{
-		using NormalInd = std::pair<vec3, uint32_t>;
-
-		std::unordered_map< vec3, NormalInd, KeyFuncs > indexedVerts;
-		m_indices.reserve(m_vertices.size());
-
-		uint32_t ind = 0;
-
-		for (int i = 0; i < (int)m_vertices.size(); ++i)
-		{
-			auto it = indexedVerts.find(m_vertices[i]);
-			if (it != indexedVerts.end())
-			{
-				// sum all coresponding normals to make them round
-				it->second.first += m_normals[i];
-				m_indices.push_back(it->second.second);
-			}
-			else // new vertex
-			{
-				indexedVerts[m_vertices[i]] = NormalInd(m_normals[i], ind);
-				m_indices.push_back(ind);
-				++ind;
-			}
-		}
-
-		//write back required vertices
-		m_vertices.resize(ind);
-		m_normals.resize(ind);
-		for (auto& el : indexedVerts)
-		{
-			m_vertices[el.second.second] = el.first;
-			m_normals[el.second.second] = glm::normalize(el.second.first);
-		}
-	}
 }
