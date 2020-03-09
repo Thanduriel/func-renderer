@@ -1,6 +1,7 @@
 # func-renderer
 This is OpenGl 3.3 based renderer for noise functions to experiment with terrain generation.
 It uses expression templates to compose multiple height functions in compile time.
+<img src="/mountains.jpg?raw=true">
 
 # build
 * clone repo
