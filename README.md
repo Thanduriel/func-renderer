@@ -1,5 +1,6 @@
 # func-renderer
-OpenGl 3.3 based visualiser for mathematical functions
+This is OpenGl 3.3 based renderer for noise functions to experiment with terrain generation.
+IT uses expression templates to compose different feature functions in compile time.
 
 # build
 * clone repo
@@ -13,7 +14,7 @@ A variaty of useful functions can be found in functions1d.hpp, functions2d.hpp a
 Examples on how to combine and render them are located in scene.cpp.
 To display a specific scene change the type in main.cpp.
 
-If you want to display 1D functions make sure to #define MODE2D in config.hpp
+If you want to display 1D functions make sure to #define MODE2D in config.hpp,
 otherwise remove it.
 
 # further read
